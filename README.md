@@ -44,11 +44,25 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Milestone 3: Data Cleaning (Completed)
+- **Duplicate Removal:** Checked and removed **146 exact duplicate rows**, reducing sample size from $53,940$ to $53,794$ to prevent data leakage between train and test sets.
+- **Invalid Physical Dimensions:** Filtered out **19 records** with physically impossible zero dimensions ($x \le 0$, $y \le 0$, or $z \le 0$), leaving $53,775$ rows.
+- **Typographical Errors:** Removed **3 extreme dimensional transposition errors** ($y > 20\text{ mm}$ or $z > 20\text{ mm}$), leaving **$53,772$ clean rows**.
+- **Outlier Assessment (IQR Method):**
+  - Evaluated statistical outliers across all numerical columns.
+  - Justified keeping legitimate high-carat and high-price observations to preserve true market price variation without artificial truncation.
+- **Missing Value Status:** Verified $0$ missing values across all columns; no imputation required.
+- **In-Memory Pipeline:** Cleaned data is maintained directly in-memory as `df_cleaned` throughout the notebook pipeline. No intermediate dataset files are created, keeping `datasets/diamonds.csv` as the sole dataset file.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Self-contained, fully executed notebook covering Milestone 1 (Loading & Audit) and Milestone 2 (EDA visualisations & observations).
+  - `regression.ipynb`: Self-contained, executed notebook covering 1. Dataset Loading & Audit, 2. Exploratory Data Analysis, and 3. Data Cleaning.
 - `datasets/`:
-  - `diamonds.csv`: Official regression dataset ($53,940 \times 10$).
+  - `diamonds.csv`: The official, single regression dataset ($53,940 \times 10$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
+
 
