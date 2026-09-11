@@ -56,13 +56,35 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Milestone 4: Train/Test Split and Preprocessing (Completed)
+- **Train/Test Partitioning:**
+  - 80:20 split with `random_state=42`.
+  - Training set: **43,017 samples**; Testing set: **10,755 samples**.
+  - Target stratification implemented using 5 quantile price bins to ensure balanced price distributions across both splits.
+  - Stratification verified: Training median price (\$2,400.00) and test median price (\$2,407.00) match closely.
+- **Categorical Feature Encoding:**
+  - Applied `OrdinalEncoder` to `cut`, `color`, and `clarity`, matching official gemological grading hierarchies (`Fair` < `Good` < ... < `Ideal`; `J` < `I` < ... < `D`; `I1` < `SI2` < ... < `IF`).
+- **Numerical Feature Scaling:**
+  - Standardized all 6 numerical features (`carat`, `depth`, `table`, `x`, `y`, `z`) using `StandardScaler` to mean 0 and variance 1.
+- **Zero-Leakage Preprocessing Architecture:**
+  - `ColumnTransformer` fitted **strictly on training data (`X_train`)** and applied to transform both `X_train` and `X_test`.
+  - Zero test set information leaked into the scaling or encoding parameters.
+- **Final Input Dimension:** Exactly **9 preprocessed predictors**.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Self-contained, executed notebook covering 1. Dataset Loading & Audit, 2. Exploratory Data Analysis, and 3. Data Cleaning.
+  - `regression.ipynb`: Self-contained, executed notebook covering:
+    1. Dataset Loading & Audit
+    2. Exploratory Data Analysis
+    3. Data Cleaning
+    4. Train/Test Split & Preprocessing
 - `datasets/`:
   - `diamonds.csv`: The official, single regression dataset ($53,940 \times 10$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
