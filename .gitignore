@@ -1,0 +1,12 @@
+# Large files (>100MB)
+datasets/test_transaction.csv
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# System and IDE files
+.DS_Store
+Thumbs.db
