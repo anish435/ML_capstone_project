@@ -69,7 +69,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 - **Zero-Leakage Preprocessing Architecture:**
   - `ColumnTransformer` fitted **strictly on training data (`X_train`)** and applied to transform both `X_train` and `X_test`.
   - Zero test set information leaked into the scaling or encoding parameters.
-- **Final Input Dimension:** Exactly **9 preprocessed predictors**.
+---
+
+## Milestone 5: Feature Engineering (Completed)
+- **Engineered Feature:** `volume = x * y * z` (diamond bounding volume in $\text{mm}^3$).
+- **Domain Rationale:** Combines length ($x$), width ($y$), and depth ($z$) into a single physical measurement of 3D stone size, directly mirroring the physical mass-density relationship ($\text{Mass} = \text{Density} \times \text{Volume}$).
+- **Feature Characteristics:**
+  - Min volume: $31.71\text{ mm}^3$, Max volume: $790.13\text{ mm}^3$, Mean volume: $129.78\text{ mm}^3$.
+  - Missing values: Exactly **0**.
+  - Correlation with price: **$r = 0.9235$** (strong non-linear upward curve).
+- **Zero Target Leakage:** Derived exclusively from physical dimensions ($x, y, z$) without using target `price`.
+- **Integrated Pipeline:** Feature created on `df_cleaned` before train/test splitting and standardized alongside other numerical features, yielding **10 total preprocessed features** ($7$ numerical + $3$ categorical).
 
 ---
 
@@ -79,11 +89,13 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
     1. Dataset Loading & Audit
     2. Exploratory Data Analysis
     3. Data Cleaning
-    4. Train/Test Split & Preprocessing
+    4. Feature Engineering
+    5. Train/Test Split & Preprocessing
 - `datasets/`:
   - `diamonds.csv`: The official, single regression dataset ($53,940 \times 10$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
