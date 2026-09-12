@@ -83,18 +83,54 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+---
+
+# Fraud Detection Using Machine Learning Classification
+
+## Project Overview
+This track focuses on detecting fraudulent financial transactions using customer, account, transaction, and behavioral features.
+
+### Formulated Classification Task:
+$$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fraud Status } (y \in \{0, 1\})$$
+
+- **Target Variable ($y$):** `risk_label`
+  - `0` = **Not Fraud** (Legitimate transaction)
+  - `1` = **Fraud** (Fraudulent transaction)
+- **Predictors ($X$):** 20 features covering customer history, transaction context, device, geography, and velocity.
+- **Dataset:** `datasets/fraud_detection.parquet` (100,000 records).
+
+---
+
+## Milestone 7: Dataset Loading & Initial Audit (Completed)
+- **Data Ingestion:** Loaded `datasets/fraud_detection.parquet` ($100,000$ rows $\times$ $21$ columns).
+- **Integrity Audit:**
+  - **Missing Values:** Exactly **0 missing values (0.00%)** across all 21 columns.
+  - **Duplicate Records:** Exactly **0 duplicate rows (0.00%)**.
+  - **Data Types:** 10 numerical features, 5 categorical features, 3 binary flag features, 2 identifier features, and 1 integer target (`risk_label`).
+- **Target Analysis:**
+  - **Not Fraud (Class 0):** $98,500$ transactions ($98.50\%$).
+  - **Fraud (Class 1):** $1,500$ transactions ($1.50\%$).
+  - **Imbalance Ratio:** $65.67 : 1$.
+  - Target distribution visualized with count plot; noted that accuracy alone is insufficient for evaluation in extreme imbalance.
+- **Feature Catalog:**
+  - **Identifiers:** `transaction_id`, `customer_id` (flagged for future removal to prevent memorization).
+  - **Numerical:** `transaction_hour`, `transaction_day_of_week`, `account_age_days`, `previous_chargebacks`, `customer_total_transactions_30d`, `customer_risk_score`, `transaction_amount`, `avg_transaction_amount_30d_customer`, `transaction_velocity_1h`, `transaction_velocity_24h`.
+  - **Categorical:** `merchant_category`, `transaction_country`, `device_type`, `transaction_type`, `geo_location_region`.
+  - **Binary Flags:** `is_international`, `is_high_risk_merchant_category`, `is_weekend`.
+- **Notebook:** Created and executed `notebooks/classification.ipynb`.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Self-contained, executed notebook covering:
-    1. Dataset Loading & Audit
-    2. Exploratory Data Analysis
-    3. Data Cleaning
-    4. Feature Engineering
-    5. Train/Test Split & Preprocessing
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
+  - `classification.ipynb`: Fraud detection classification track (Milestone 7).
 - `datasets/`:
-  - `diamonds.csv`: The official, single regression dataset ($53,940 \times 10$).
+  - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
+  - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
