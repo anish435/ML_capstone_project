@@ -192,15 +192,41 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+## Milestone 11: Encoding, Scaling & Train/Test Splitting (Completed)
+- **Stratified Train/Test Partitioning:**
+  - 80:20 split with `random_state=42` and `stratify=y`.
+  - **Training Set:** 80,000 transactions (78,800 legitimate / 98.50%, 1,200 fraud / 1.50%).
+  - **Testing Set:** 20,000 transactions (19,700 legitimate / 98.50%, 300 fraud / 1.50%).
+  - Stratification perfectly preserved without artificial resampling or data distortion.
+- **Feature Identification (19 Predictors):**
+  - **Numerical (11):** 10 base features + engineered `amount_ratio`.
+  - **Categorical (5):** `merchant_category`, `transaction_country`, `device_type`, `transaction_type`, `geo_location_region`.
+  - **Binary Flags (3):** `is_international`, `is_high_risk_merchant_category`, `is_weekend`.
+  - **Excluded Identifiers:** `transaction_id` and `customer_id` omitted from $X$ to prevent memorization shortcuts.
+- **Categorical Feature Encoding:**
+  - Applied `OneHotEncoder(handle_unknown='ignore', sparse_output=False)` fitted **only** on `X_train`.
+  - Expanded 5 categorical variables into 33 binary indicator columns (`(80000, 33)` and `(20000, 33)`).
+- **Numerical Feature Scaling:**
+  - Applied `StandardScaler()` fitted **only** on `X_train`.
+  - Standardized 11 numerical features to mean 0 and unit variance (`(80000, 11)` and `(20000, 11)`).
+- **Final Preprocessed Pipeline:**
+  - Unified `ColumnTransformer` fitted strictly on `X_train` to generate `X_train_processed` (`80,000 x 47`) and `X_test_processed` (`20,000 x 47`).
+  - Zero missing values, matching feature dimensions across splits.
+- **Data Leakage Audit:**
+  - Full 6-point verification passed: splitting preceded transformation; encoders/scalers fitted exclusively on training data; test set only transformed; target `risk_label` strictly isolated; identifiers excluded.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–10: Loading, Audit, EDA, Cleaning & Feature Engineering).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
