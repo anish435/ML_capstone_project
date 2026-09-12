@@ -151,15 +151,38 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+## Milestone 9: Data Cleaning (Completed)
+- **Missing Values Handling (3.1):**
+  - Checked all 21 columns; confirmed exactly **0 missing values (0.00%)**.
+  - No imputation required; strategy justified to prevent synthetic artifacts in financial transactions.
+- **Duplicate Transactions Check (3.2):**
+  - Verified exact duplicate records; identified **0 duplicate rows (0.00%)**.
+  - All 100,000 unique records preserved; justified that duplicate transactions cause data leakage.
+- **Domain Validity Verification (3.3):**
+  - Executed 7 domain checks on numerical attributes (`transaction_amount <= 0`, `account_age_days < 0`, `customer_total_transactions_30d < 0`, `previous_chargebacks < 0`, `transaction_velocity_1h < 0`, `transaction_velocity_24h < 0`, `customer_risk_score < 0`).
+  - Confirmed 0 invalid values across all checks; all values strictly within valid financial domains.
+- **Outlier Analysis & Strategy (3.4):**
+  - Analyzed statistical outliers via the IQR method across key features (`transaction_amount`, `customer_risk_score`, `account_age_days`, `transaction_velocity_1h`, `transaction_velocity_24h`).
+  - Discovered that **1,496 out of 1,500 total fraud cases (99.73%)** fall in the statistical outlier region of `customer_risk_score`.
+  - Discovered that high-value transactions and velocity bursts carry disproportionately high fraud rates (up to 11.18%).
+  - **Decision:** Retained 100% of legitimate extreme values; 0 outliers removed. Trimming them would catastrophically eliminate the minority fraud signal.
+- **In-Memory Dataset Construction (3.5 & 3.6):**
+  - Maintained cleaned data in-memory as `df_cleaned` ($100,000$ rows $\times$ $21$ columns).
+  - Raw dataset `datasets/fraud_detection.parquet` kept completely unmodified.
+  - Comprehensive Cleaning Summary table embedded in the notebook.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–8: Loading, Audit & EDA).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–9: Loading, Audit, EDA & Cleaning).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
