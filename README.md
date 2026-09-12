@@ -121,15 +121,46 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+## Milestone 8: Exploratory Data Analysis (Completed)
+- **Numerical Feature Distributions (2.1):**
+  - Examined 7 key continuous variables: `transaction_amount`, `customer_risk_score`, `previous_chargebacks`, `customer_total_transactions_30d`, `transaction_velocity_1h`, `transaction_velocity_24h`, and `account_age_days`.
+  - `transaction_amount` is heavily right-skewed with typical purchases under \$500 and a high-value tail up to \$15,000.
+  - `previous_chargebacks` is heavily zero-inflated (nearly 90% of accounts have 0 chargebacks).
+  - `customer_risk_score` displays a bimodal pattern with peaks near 0–1 and 3–4.
+- **Categorical Feature Distributions (2.2):**
+  - `merchant_category`: Evenly balanced across all 10 categories (~10,000 transactions each).
+  - `transaction_country`: US accounts for 55.0% of transactions, followed by UK (12.0%), Canada (8.1%), Australia (6.9%), and India (6.0%).
+  - `device_type`: Mobile dominates with 54.7%, followed by desktop (30.2%), tablet (10.0%), and wearable (5.1%).
+  - `transaction_type`: POS (40.0%) and Online (40.0%) represent the bulk of activity, with ATM and MOTO at 10.0% each.
+- **Target Variable Distribution (2.3):**
+  - Confirmed 98,500 legitimate (98.50%) vs. 1,500 fraudulent (1.50%) transactions ($65.67 : 1$ imbalance).
+  - Established that model evaluation will focus on Recall, Precision, F1-Score, and PR-AUC rather than misleading overall accuracy.
+- **Correlation Analysis (2.4):**
+  - `customer_risk_score` ($r = +0.36$) and `previous_chargebacks` ($r = +0.30$) have the highest linear association with fraud.
+  - Transaction velocity features correlate positively with fraud ($r = +0.14$ for 1h, $r = +0.13$ for 24h) and share moderate collinearity with each other ($r = +0.44$).
+- **Feature vs. Fraud Relationships (2.5 & 2.6):**
+  - **Chargebacks:** Accounts with 0 prior chargebacks are overwhelmingly legitimate (89,876 legitimate vs. only 8 fraud cases); having $\ge 1$ previous chargebacks drastically increases fraud probability.
+  - **Customer Risk Score:** Legitimate transactions have a low median score ($\approx 0.14$), whereas fraudulent transactions exhibit an elevated median score ($\approx 3.45$).
+  - **Transaction Amount:** Fraudulent transactions exhibit higher average (\$1,701.37 vs. \$835.33) and median (\$897.69 vs. \$354.12) purchase amounts.
+- **Categorical Fraud Prevalence (2.7):**
+  - Identified high-risk merchant categories: `gambling` (2.77%), `luxury_goods` (2.76%), `online_services` (2.74%), and `travel` (2.72%).
+  - Identified low-risk everyday categories: `fuel` (0.45%), `grocery` (0.46%), and `restaurant` (0.47%).
+- **EDA Summary (2.8):**
+  - Zero missing values and zero duplicate rows across the entire dataset.
+  - Clear separation signals identified for downstream data cleaning, preprocessing, and model training.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
-  - `classification.ipynb`: Fraud detection classification track (Milestone 7).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–8: Loading, Audit & EDA).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
