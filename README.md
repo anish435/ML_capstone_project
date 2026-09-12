@@ -173,15 +173,35 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+## Milestone 10: Feature Engineering (Completed)
+- **Engineered Feature:** `amount_ratio`
+- **Mathematical Formulation:**
+  $$\text{amount\_ratio} = \frac{\text{transaction\_amount}}{\text{avg\_transaction\_amount\_30d\_customer} + 1}$$
+- **Domain Justification:**
+  - Compares each transaction amount against the customer's personal 30-day spending baseline.
+  - Provides a normalized measure of spending abnormality without referencing the target label `risk_label`.
+  - Smoothing constant ($+1$) guarantees zero division-by-zero errors.
+- **Statistical Validation:**
+  - Minimum: `0.0067`, Maximum: `173.1206`, Mean: `1.3475`, Median: `0.7577`.
+  - Exactly **0 missing values** and **0 infinite values**.
+- **Feature vs. Target Discriminative Power:**
+  - Fraudulent transactions exhibit nearly double the median ratio (**1.39** vs. **0.75**) and 75th percentile (**3.04** vs. **1.51**) compared to legitimate purchases.
+- **Predictor Catalog Update:**
+  - Numerical predictors expanded to 11 features (`num_cols_updated = num_cols + ['amount_ratio']`).
+  - Total input predictors for downstream preprocessing: **19 features** (11 numerical + 5 categorical + 3 binary flags).
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–9: Loading, Audit, EDA & Cleaning).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–10: Loading, Audit, EDA, Cleaning & Feature Engineering).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
+
 
 
 
