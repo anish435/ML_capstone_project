@@ -417,10 +417,18 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+### 6.3 Gaussian Naive Bayes (Completed)
+- **Model:** Probabilistic `GaussianNB` (`sklearn.naive_bayes`).
+- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
+- **Conditional Independence Assumption:** Assumes features are conditionally independent given the class ($P(X|y) = \prod P(x_i|y)$). Noted that while real transaction features share natural correlations (e.g. velocity windows and transaction amounts), the algorithm remains highly effective and delivers fast probabilistic baselines.
+- **Evaluation Performance:** Achieved test accuracy of **`0.9500`** ($95.00\%$) and captured over $93\%$ of true fraud cases ($281$ out of $300$) without artificial resampling or class re-weighting.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression & KNN).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN & Gaussian Naive Bayes).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
