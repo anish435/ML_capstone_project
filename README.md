@@ -238,6 +238,22 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Regression Model Visualisations (Completed)
+- **Visualisation Focus:** Evaluated the best-performing model identified from comparative evaluation (**Random Forest Regressor**, $R^2 = 0.9810$) on the hold-out test set ($10,755$ samples).
+- **Key Diagnostic Visualisations:**
+  1. **Predicted vs. Actual Plot:**
+     - Scatter plot comparing actual diamond prices against Random Forest predictions against a $45^\circ$ reference diagonal line ($\text{Predicted} = \text{Actual}$).
+     - Data points tightly cluster along the reference diagonal across the entire price range with high precision under \$10,000 and expected wider market variance for rare stones above \$12,000.
+  2. **Residual Plot:**
+     - Scatter plot of residuals ($\text{residual} = y_{\text{test}} - y_{\text{pred}}$) plotted against predicted values relative to a horizontal reference line ($\text{residual} = 0$).
+     - Confirms an unbiased model: residuals are symmetrically centered around zero without systematic under- or over-estimation across all prediction tiers.
+  3. **Feature Importance Ranking:**
+     - Extracted `feature_importances_` from the trained Random Forest ensemble across all 10 preprocessed features.
+     - **Size & Mass Dominance:** 3D physical size features (`volume` at $62.44\%$ and dimension `y` at $21.53\%$, combined with `carat` at $5.23\%$) account for ~90% of total predictive importance.
+     - **Quality Multipliers:** `clarity` ($6.34\%$) and `color` ($3.13\%$) provide secondary value adjustments, while proportions (`depth`, `table`, `cut`) contribute under $1\%$ each.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -372,7 +388,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–8: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models, Comparative Evaluation & Hyperparameter Tuning).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
