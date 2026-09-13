@@ -193,6 +193,30 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Regression Comparative Evaluation (Completed)
+- **Evaluation Scope:** Consolidated comparison of all 10 trained regression models evaluated on the identical 80:20 test split ($10,755$ samples, $10$ features), ranked by $R^2$ score.
+- **Summary Leaderboard:**
+
+| Rank | Model | $R^2$ | RMSE | MAE |
+| :-: | :--- | :---: | :---: | :---: |
+| 1 | **Random Forest Regressor** | **0.9810** | **$557.43** | **$270.00** |
+| 2 | **Gradient Boosting Regressor** | **0.9755** | **$632.82** | **$349.89** |
+| 3 | **K-Nearest Neighbors Regressor** | **0.9707** | **$692.50** | **$368.71** |
+| 4 | **Decision Tree Regressor** | **0.9661** | **$745.08** | **$360.01** |
+| 5 | **Polynomial Regression ($d=2$)** | **0.9642** | **$765.52** | **$453.21** |
+| 6 | **Ridge Regression** | **0.9093** | **$1,217.70** | **$797.76** |
+| 7 | **Linear Regression** | **0.9093** | **$1,217.74** | **$797.70** |
+| 8 | **Lasso Regression** | **0.9091** | **$1,219.03** | **$799.20** |
+| 9 | **ElasticNet Regression** | **0.8647** | **$1,487.62** | **$1,008.65** |
+| 10 | **Support Vector Regressor (SVR)** | **0.6015** | **$2,552.78** | **$1,220.11** |
+
+- **Key Takeaways:**
+  1. Random Forest Regressor gave the best result with the highest $R^2$ (0.9810) and the lowest RMSE ($557.43) and MAE ($270.00).
+  2. Gradient Boosting, KNN, Decision Tree, and Polynomial Regression also performed well and were better than the basic linear models.
+  3. Linear, Ridge, and Lasso gave similar results, while ElasticNet and SVR performed worse. SVR may improve after hyperparameter tuning.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -327,7 +351,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest, Gradient Boosting, SVR & KNN Regressor).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–7: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models & Comparative Evaluation).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
