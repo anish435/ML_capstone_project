@@ -116,6 +116,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## ElasticNet Regression (Completed)
+- **Model:** ElasticNet combining L1 & L2 penalties (`sklearn.linear_model`, default $\alpha=1.0$, $\text{l1\_ratio}=0.5$, `random_state=42`).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.8647`** (Explains $86.47\%$ of total price variance).
+  - **Root Mean Squared Error (RMSE):** **`$1,487.62`**
+  - **Mean Absolute Error (MAE):** **`$1,008.65`**
+- **Domain Observation:** Under default parameters ($\alpha=1.0, \text{l1\_ratio}=0.5$), the dual regularization applies stronger shrinkage compared to Ridge or Lasso alone, causing slight underfitting. In high-dimensional multicollinear settings, ElasticNet provides robust feature grouping; hyperparameter tuning of $\alpha$ allows it to match the ~91% baseline accuracy.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -250,7 +261,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge Regression & Lasso Regression).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso & ElasticNet Regression).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
