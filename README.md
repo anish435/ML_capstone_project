@@ -171,6 +171,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Support Vector Regressor (Completed)
+- **Model:** Kernelized `SVR` (`sklearn.svm`, default RBF kernel, $C=1.0, \epsilon=0.1$).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.6015`** (Explains $60.15\%$ of total price variance).
+  - **Root Mean Squared Error (RMSE):** **`$2,552.78`**
+  - **Mean Absolute Error (MAE):** **`$1,220.11`**
+- **Domain Observation:** Standard SVR with default $C=1.0$ underperforms because the penalty parameter is insufficiently scaled relative to unscaled price magnitudes reaching \$18,800. While SVR effectively captures non-linear manifolds, competitive performance on large pricing datasets requires hyperparameter optimization of $C$ or target normalization.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -305,7 +316,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest & Gradient Boosting Regressor).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest, Gradient Boosting & Support Vector Regressor).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
