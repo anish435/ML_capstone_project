@@ -217,6 +217,27 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Regression Hyperparameter Tuning (Completed)
+- **Tuning Methodology:** Applied 3-fold cross-validation (`GridSearchCV`, `scoring='r2'`, `n_jobs=-1`) strictly on the training partition (`X_train_processed`, `y_train`) to optimize key hyperparameters for the top two performing ensemble models.
+- **Tuned Models & Best Parameters:**
+  - **Random Forest Regressor:** `{'n_estimators': 150, 'max_depth': None, 'min_samples_split': 5}`
+    - Best Cross-Validation $R^2$: `0.9811`
+  - **Gradient Boosting Regressor:** `{'n_estimators': 150, 'learning_rate': 0.1, 'max_depth': 5}`
+    - Best Cross-Validation $R^2$: `0.9819`
+- **Before vs. After Tuning Comparison:**
+
+| Model | Before $R^2$ | After $R^2$ | Before RMSE | After RMSE | Before MAE | After MAE |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Random Forest Regressor** | 0.9810 | 0.9810 | \$557.43 | \$556.70 | \$270.00 | \$269.44 |
+| **Gradient Boosting Regressor** | 0.9755 | 0.9817 | \$632.82 | \$546.70 | \$349.89 | \$284.00 |
+
+- **Key Observations:**
+  1. **Gradient Boosting Improvement:** Hyperparameter tuning significantly enhanced the Gradient Boosting Regressor. Its $R^2$ score improved from 0.9755 to 0.9817, test RMSE decreased from \$632.82 to \$546.70, and test MAE dropped from \$349.89 to \$284.00. Tuning `max_depth` to 5 and `n_estimators` to 150 allowed the model to capture deeper interactions between diamond features.
+  2. **Random Forest Stability:** The default Random Forest model already had strong hyperparameters. Tuning produced minor refinements in error metrics, improving test RMSE from \$557.43 to \$556.70 and test MAE from \$270.00 to \$269.44 while holding $R^2$ steady at 0.9810.
+  3. **Overall Comparison:** Post-tuning, Gradient Boosting achieved the highest $R^2$ (0.9817) and lowest RMSE (\$546.70), while Random Forest achieved the lowest MAE (\$269.44). Both tuned models demonstrate exceptional predictive accuracy for diamond valuation.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -351,7 +372,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–7: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models & Comparative Evaluation).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–8: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models, Comparative Evaluation & Hyperparameter Tuning).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
