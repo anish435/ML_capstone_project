@@ -138,6 +138,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Decision Tree Regressor (Completed)
+- **Model:** Non-parametric `DecisionTreeRegressor` (`sklearn.tree`, default parameters, `random_state=42`).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9661`** (Explains $96.61\%$ of total price variance—highest accuracy across all models).
+  - **Root Mean Squared Error (RMSE):** **`$745.08`** (Lowest RMSE achieved).
+  - **Mean Absolute Error (MAE):** **`$360.01`** (Cut in more than half compared to baseline linear models of ~\$798).
+- **Domain Observation:** Decision trees partition feature space into granular hierarchical subgroups based on carat size, physical cut, and clarity grades. This localized partitioning captures sharp, non-linear pricing jumps across premium diamond segments without imposing linear constraints.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -272,7 +283,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet & Polynomial Regression).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression & Decision Tree Regressor).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
