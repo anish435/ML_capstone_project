@@ -83,6 +83,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Milestone 6: Linear Regression (Completed)
+- **Model:** Ordinary Least Squares `LinearRegression` (`sklearn.linear_model`).
+- **Data Configuration:** Evaluated on the standardized, ordinal-encoded test split ($10,755$ samples) using 10 preprocessed features without modifying or re-splitting data.
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9093`** (Explains $90.93\%$ of total price variance).
+  - **Root Mean Squared Error (RMSE):** **`$1,217.74`**
+  - **Mean Absolute Error (MAE):** **`$797.70`**
+- **Domain Observation:** Strong baseline linearity established; non-linear residual patterns indicate potential for regularized or non-linear tree-based models to achieve higher precision.
+
+---
+
 ---
 
 # Fraud Detection Using Machine Learning Classification
@@ -219,7 +230,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–5).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing & Linear Regression).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
