@@ -56,7 +56,19 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Milestone 4: Train/Test Split and Preprocessing (Completed)
+## Milestone 4: Feature Engineering (Completed)
+- **Engineered Feature:** `volume = x * y * z` (diamond bounding volume in $\text{mm}^3$).
+- **Domain Rationale:** Combines length ($x$), width ($y$), and depth ($z$) into a single physical measurement of 3D stone size, directly mirroring the physical mass-density relationship ($\text{Mass} = \text{Density} \times \text{Volume}$).
+- **Feature Characteristics:**
+  - Min volume: $31.71\text{ mm}^3$, Max volume: $790.13\text{ mm}^3$, Mean volume: $129.78\text{ mm}^3$.
+  - Missing values: Exactly **0**.
+  - Correlation with price: **$r = 0.9235$** (strong non-linear upward curve).
+- **Zero Target Leakage:** Derived exclusively from physical dimensions ($x, y, z$) without using target `price`.
+- **Integrated Pipeline:** Feature created on `df_cleaned` before train/test splitting and standardized alongside other numerical features, yielding **10 total preprocessed features** ($7$ numerical + $3$ categorical).
+
+---
+
+## Milestone 5: Train/Test Split and Preprocessing (Completed)
 - **Train/Test Partitioning:**
   - 80:20 split with `random_state=42`.
   - Training set: **43,017 samples**; Testing set: **10,755 samples**.
@@ -69,21 +81,12 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 - **Zero-Leakage Preprocessing Architecture:**
   - `ColumnTransformer` fitted **strictly on training data (`X_train`)** and applied to transform both `X_train` and `X_test`.
   - Zero test set information leaked into the scaling or encoding parameters.
----
-
-## Milestone 5: Feature Engineering (Completed)
-- **Engineered Feature:** `volume = x * y * z` (diamond bounding volume in $\text{mm}^3$).
-- **Domain Rationale:** Combines length ($x$), width ($y$), and depth ($z$) into a single physical measurement of 3D stone size, directly mirroring the physical mass-density relationship ($\text{Mass} = \text{Density} \times \text{Volume}$).
-- **Feature Characteristics:**
-  - Min volume: $31.71\text{ mm}^3$, Max volume: $790.13\text{ mm}^3$, Mean volume: $129.78\text{ mm}^3$.
-  - Missing values: Exactly **0**.
-  - Correlation with price: **$r = 0.9235$** (strong non-linear upward curve).
-- **Zero Target Leakage:** Derived exclusively from physical dimensions ($x, y, z$) without using target `price`.
-- **Integrated Pipeline:** Feature created on `df_cleaned` before train/test splitting and standardized alongside other numerical features, yielding **10 total preprocessed features** ($7$ numerical + $3$ categorical).
 
 ---
 
-## Milestone 6: Linear Regression (Completed)
+## Milestone 6: Regression Models (Completed)
+
+### 6.1 Linear Regression
 - **Model:** Ordinary Least Squares `LinearRegression` (`sklearn.linear_model`).
 - **Data Configuration:** Evaluated on the standardized, ordinal-encoded test split ($10,755$ samples) using 10 preprocessed features without modifying or re-splitting data.
 - **Evaluation Performance:**
@@ -94,7 +97,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Ridge Regression (Completed)
+### 6.2 Ridge Regression
 - **Model:** L2-Regularized `Ridge` (`sklearn.linear_model`, default $\alpha=1.0$).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -105,7 +108,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Lasso Regression (Completed)
+### 6.3 Lasso Regression
 - **Model:** L1-Regularized `Lasso` (`sklearn.linear_model`, `max_iter=2000`, `tol=0.01`, `random_state=42`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -116,7 +119,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## ElasticNet Regression (Completed)
+### 6.4 ElasticNet Regression
 - **Model:** ElasticNet combining L1 & L2 penalties (`sklearn.linear_model`, default $\alpha=1.0$, $\text{l1\_ratio}=0.5$, `random_state=42`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -127,7 +130,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Polynomial Regression (Completed)
+### 6.5 Polynomial Regression ($d=2$)
 - **Model:** Degree-2 `PolynomialFeatures` + `LinearRegression` (`sklearn.preprocessing`, `sklearn.linear_model`).
 - **Data Configuration:** `PolynomialFeatures(degree=2)` fitted **strictly on `X_train_processed`** ($43,017$ samples $\rightarrow$ $66$ polynomial and interaction features) and transformed onto `X_test_processed` ($10,755$ samples $\rightarrow$ $66$ features) with zero data leakage.
 - **Evaluation Performance:**
@@ -138,7 +141,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Decision Tree Regressor (Completed)
+### 6.6 Decision Tree Regressor
 - **Model:** Non-parametric `DecisionTreeRegressor` (`sklearn.tree`, default parameters, `random_state=42`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -149,7 +152,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Random Forest Regressor (Completed)
+### 6.7 Random Forest Regressor
 - **Model:** Ensemble `RandomForestRegressor` (`sklearn.ensemble`, 100 estimators, `random_state=42`, `n_jobs=-1`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -160,7 +163,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Gradient Boosting Regressor (Completed)
+### 6.8 Gradient Boosting Regressor
 - **Model:** Sequential Boosting `GradientBoostingRegressor` (`sklearn.ensemble`, 100 estimators, `random_state=42`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -171,7 +174,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Support Vector Regressor (Completed)
+### 6.9 Support Vector Regressor (SVR)
 - **Model:** Kernelized `SVR` (`sklearn.svm`, default RBF kernel, $C=1.0, \epsilon=0.1$).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -182,7 +185,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## K-Nearest Neighbors Regressor (Completed)
+### 6.10 K-Nearest Neighbors Regressor
 - **Model:** Distance-based `KNeighborsRegressor` (`sklearn.neighbors`, $k=5$, Euclidean metric, `n_jobs=-1`).
 - **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
 - **Evaluation Performance:**
@@ -193,7 +196,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Regression Comparative Evaluation (Completed)
+## Milestone 7: Comparative Evaluation (Completed)
 - **Evaluation Scope:** Consolidated comparison of all 10 trained regression models evaluated on the identical 80:20 test split ($10,755$ samples, $10$ features), ranked by $R^2$ score.
 - **Summary Leaderboard:**
 
@@ -217,7 +220,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Regression Hyperparameter Tuning (Completed)
+## Milestone 8: Hyperparameter Tuning (Completed)
 - **Tuning Methodology:** Applied 3-fold cross-validation (`GridSearchCV`, `scoring='r2'`, `n_jobs=-1`) strictly on the training partition (`X_train_processed`, `y_train`) to optimize key hyperparameters for the top two performing ensemble models.
 - **Tuned Models & Best Parameters:**
   - **Random Forest Regressor:** `{'n_estimators': 150, 'max_depth': None, 'min_samples_split': 5}`
@@ -238,7 +241,7 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
-## Regression Model Visualisations (Completed)
+## Milestone 9: Model Visualisations (Completed)
 - **Visualisation Focus:** Evaluated the best-performing model identified from comparative evaluation (**Random Forest Regressor**, $R^2 = 0.9810$) on the hold-out test set ($10,755$ samples).
 - **Key Diagnostic Visualisations:**
   1. **Predicted vs. Actual Plot:**
@@ -270,7 +273,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
-## Milestone 7: Dataset Loading & Initial Audit (Completed)
+## Milestone 1: Dataset Loading & Initial Audit (Completed)
 - **Data Ingestion:** Loaded `datasets/fraud_detection.parquet` ($100,000$ rows $\times$ $21$ columns).
 - **Integrity Audit:**
   - **Missing Values:** Exactly **0 missing values (0.00%)** across all 21 columns.
@@ -290,7 +293,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
-## Milestone 8: Exploratory Data Analysis (Completed)
+## Milestone 2: Exploratory Data Analysis (Completed)
 - **Numerical Feature Distributions (2.1):**
   - Examined 7 key continuous variables: `transaction_amount`, `customer_risk_score`, `previous_chargebacks`, `customer_total_transactions_30d`, `transaction_velocity_1h`, `transaction_velocity_24h`, and `account_age_days`.
   - `transaction_amount` is heavily right-skewed with typical purchases under \$500 and a high-value tail up to \$15,000.
@@ -320,7 +323,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
-## Milestone 9: Data Cleaning (Completed)
+## Milestone 3: Data Cleaning (Completed)
 - **Missing Values Handling (3.1):**
   - Checked all 21 columns; confirmed exactly **0 missing values (0.00%)**.
   - No imputation required; strategy justified to prevent synthetic artifacts in financial transactions.
@@ -342,7 +345,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
-## Milestone 10: Feature Engineering (Completed)
+## Milestone 4: Feature Engineering (Completed)
 - **Engineered Feature:** `amount_ratio`
 - **Mathematical Formulation:**
   $$\text{amount\_ratio} = \frac{\text{transaction\_amount}}{\text{avg\_transaction\_amount\_30d\_customer} + 1}$$
@@ -361,7 +364,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
-## Milestone 11: Encoding, Scaling & Train/Test Splitting (Completed)
+## Milestone 5: Preprocessing (Encoding, Scaling & Splitting) (Completed)
 - **Stratified Train/Test Partitioning:**
   - 80:20 split with `random_state=42` and `stratify=y`.
   - **Training Set:** 80,000 transactions (78,800 legitimate / 98.50%, 1,200 fraud / 1.50%).
@@ -386,10 +389,20 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+---
+
+## Milestone 6: Classification Models (In Progress)
+
+### 6.1 Logistic Regression (Completed)
+- **Model:** Baseline linear classifier `LogisticRegression` (`sklearn.linear_model`, `class_weight='balanced'`, `random_state=42`).
+- **Data Configuration:** Trained on `X_train_processed` ($80,000$ samples, $47$ features) and evaluated on `X_test_processed` ($20,000$ samples) without data leakage or artificial resampling.
+- **Handling Imbalance:** Inversely weighted classes via `class_weight='balanced'` to heavily penalize false negatives on the rare minority fraud class ($1.5\%$).
+- **Convergence & Predictions:** Successfully converged in 26 iterations; generated discrete class predictions and continuous predicted probabilities for downstream ROC-AUC and PR-AUC ranking.
+
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading, Audit, EDA, Cleaning, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing & Logistic Regression).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
