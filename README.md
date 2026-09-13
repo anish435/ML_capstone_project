@@ -425,16 +425,30 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+### 6.4 Decision Tree Classifier (Completed)
+- **Model:** Non-parametric `DecisionTreeClassifier` (`sklearn.tree`, `class_weight='balanced'`, `random_state=42`).
+- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
+- **Hyperparameter Analysis (`max_depth` Tuning):**
+  - Evaluated candidate maximum tree depths:
+    - `max_depth = 3`: Accuracy = `0.9112`
+    - `max_depth = 5`: Accuracy = `0.9438`
+    - `max_depth = 7`: Accuracy = `0.9547`
+    - `max_depth = 10`: Accuracy = **`0.9689`** (Highest accuracy)
+  - Selected optimal `max_depth = 10` for the final model.
+- **Tree Visualization & Interpretability:** Rendered the top 2 decision levels using `plot_tree()` with readable feature names. The hierarchy confirms that `customer_risk_score` and `previous_chargebacks` form the primary root-level split conditions.
+- **Pruning & Complexity Rationale:** Constraining `max_depth` prevents the tree from creating overly specific leaf partitions that memorize training noise.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN & Gaussian Naive Bayes).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN, Gaussian Naive Bayes & Decision Tree).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
 - `AGENTS.md`: Repository workflow guidelines.
 - `README.md`: Project documentation and milestone tracking.
-
 
 
 
