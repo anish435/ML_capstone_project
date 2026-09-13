@@ -160,6 +160,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Gradient Boosting Regressor (Completed)
+- **Model:** Sequential Boosting `GradientBoostingRegressor` (`sklearn.ensemble`, 100 estimators, `random_state=42`).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9755`** (Explains $97.55\%$ of total price variance—outperforms individual decision trees and polynomial regression).
+  - **Root Mean Squared Error (RMSE):** **`$632.82`**
+  - **Mean Absolute Error (MAE):** **`$349.89`** (Top-tier error reduction).
+- **Domain Observation:** Gradient Boosting builds trees sequentially, where each successive estimator directly optimizes against the pseudo-residuals of the previous ensemble stage. This targeted error-correction allows the model to handle subtle non-linear interactions across cut, color, clarity, and dimensional volume effectively.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -294,7 +305,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree & Random Forest Regressor).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest & Gradient Boosting Regressor).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
