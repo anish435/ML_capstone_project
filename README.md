@@ -182,6 +182,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## K-Nearest Neighbors Regressor (Completed)
+- **Model:** Distance-based `KNeighborsRegressor` (`sklearn.neighbors`, $k=5$, Euclidean metric, `n_jobs=-1`).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9707`** (Explains $97.07\%$ of total price variance—outperforms polynomial regression and single decision trees).
+  - **Root Mean Squared Error (RMSE):** **`$692.50`**
+  - **Mean Absolute Error (MAE):** **`$368.71`** (Top-tier local prediction accuracy).
+- **Domain Observation:** Diamond valuation closely mirrors KNN logic: stones are appraised against historical market comparables with similar carat size, dimensions, and grading levels. By calculating Euclidean distances across standardized features, KNN effectively averages the 5 nearest neighborhood stones to deliver accurate price estimates.
+
+---
+
 # Fraud Detection Using Machine Learning Classification
 
 ## Project Overview
@@ -316,7 +327,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest, Gradient Boosting & Support Vector Regressor).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge, Lasso, ElasticNet, Polynomial Regression, Decision Tree, Random Forest, Gradient Boosting, SVR & KNN Regressor).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
