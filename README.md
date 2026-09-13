@@ -440,10 +440,26 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+### 6.5 Support Vector Machine (SVC) (Completed)
+- **Model:** Kernelized Support Vector Classifier `SVC` (`sklearn.svm`, `class_weight='balanced'`, `random_state=42`).
+- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
+- **Hyperparameter Analysis ($C$ and Kernel Tuning):**
+  - Evaluated parameter grid across regularization $C \in \{0.1, 1, 10\}$ and kernels (`linear`, `rbf`):
+    - $C=0.1, \text{linear}$: Accuracy = `0.9498`
+    - $C=0.1, \text{rbf}$: Accuracy = `0.9623`
+    - $C=1.0, \text{linear}$: Accuracy = `0.9503`
+    - $C=1.0, \text{rbf}$: Accuracy = `0.9836`
+    - $C=10.0, \text{linear}$: Accuracy = `0.9504`
+    - $C=10.0, \text{rbf}$: Accuracy = **`0.9894`** (Highest accuracy)
+  - Selected optimal combination: **$C = 10, \text{kernel} = \text{'rbf'}$** achieving `98.94%` test accuracy.
+- **Scaling Sensitivity:** Support Vector Classifiers depend strictly on geometric margins and Euclidean distances; pre-scaling continuous features to mean 0 and unit variance guarantees that high-magnitude features do not distort the decision boundary.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN, Gaussian Naive Bayes & Decision Tree).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN, Gaussian Naive Bayes, Decision Tree & Support Vector Machine).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
