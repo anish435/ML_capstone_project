@@ -399,10 +399,28 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 - **Handling Imbalance:** Inversely weighted classes via `class_weight='balanced'` to heavily penalize false negatives on the rare minority fraud class ($1.5\%$).
 - **Convergence & Predictions:** Successfully converged in 26 iterations; generated discrete class predictions and continuous predicted probabilities for downstream ROC-AUC and PR-AUC ranking.
 
+---
+
+### 6.2 K-Nearest Neighbors (KNN) (Completed)
+- **Model:** Instance-based `KNeighborsClassifier` (`sklearn.neighbors`, $k=5$, Euclidean distance metric, `n_jobs=-1`).
+- **Data Configuration:** Evaluated on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
+- **Hyperparameter Analysis ($k$ Tuning):**
+  - Evaluated candidate neighborhood values $k \in \{3, 5, 7, 9, 11\}$:
+    - $k=3$: Accuracy = `0.9870`
+    - $k=5$: Accuracy = `0.9870` (highest accuracy: `0.987050`)
+    - $k=7$: Accuracy = `0.9870`
+    - $k=9$: Accuracy = `0.9866`
+    - $k=11$: Accuracy = `0.9867`
+  - Selected optimal $k=5$ as the final model, balancing local precision against oversmoothing.
+- **Distance Metric Rationale:** Euclidean distance was selected to measure straight-line geometric proximity across the standardized continuous predictors and one-hot binary features.
+- **Scaling Significance:** StandardScaler prevents high-dollar transaction amounts from dominating smaller-scale customer risk scores and velocity features.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing & Logistic Regression).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression & KNN).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
