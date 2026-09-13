@@ -105,6 +105,15 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Lasso Regression (Completed)
+- **Model:** L1-Regularized `Lasso` (`sklearn.linear_model`, `max_iter=2000`, `tol=0.01`, `random_state=42`).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9091`** (Explains $90.91\%$ of total price variance).
+  - **Root Mean Squared Error (RMSE):** **`$1,219.03`**
+  - **Mean Absolute Error (MAE):** **`$799.20`**
+- **Domain Observation:** Lasso achieves consistent ~90.9% accuracy matching Linear and Ridge Regression. While L1 regularization has the ability to zero out redundant features, all 10 diamond attributes (especially carat, dimensions, cut, color, clarity, and volume) contribute meaningful explanatory power and are retained.
+
 ---
 
 # Fraud Detection Using Machine Learning Classification
@@ -241,7 +250,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression & Ridge Regression).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression, Ridge Regression & Lasso Regression).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
