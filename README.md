@@ -456,10 +456,35 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ---
 
+## Milestone 7: Classification Model Evaluation (Completed)
+- **Evaluation Strategy:** Evaluated all 5 Part-A classification models on the identical 20,000 holdout test transactions ($98.5\%$ legitimate vs. $1.5\%$ fraud) using their existing test predictions without retraining, resampling, or hyperparameter tuning.
+- **Mandatory Metrics Evaluated:** Accuracy, Precision, Recall, Weighted F1-score, ROC-AUC, and Confusion Matrix with explicit `Not Fraud` / `Fraud` labels.
+- **Consolidated Preliminary Comparison Table:**
+
+| Model | Accuracy | Precision | Recall | Weighted F1 | ROC-AUC |
+|:---|---:|---:|---:|---:|---:|
+| **Logistic Regression** | `0.9550` | `0.2477` | **`0.9800`** | `0.9679` | `0.9916` |
+| **K-Nearest Neighbors** | `0.9870` | **`0.7356`** | `0.2133` | `0.9835` | `0.8704` |
+| **Gaussian Naive Bayes** | `0.9499` | `0.2225` | `0.9367` | `0.9647` | `0.9781` |
+| **Decision Tree** | `0.9689` | `0.3059` | `0.8433` | `0.9760` | `0.9150` |
+| **Support Vector Machine** | **`0.9894`** | `0.6457` | `0.6500` | **`0.9894`** | **`0.9917`** |
+
+- **Key Analytical Observations & Trade-offs:**
+  - **Highest Accuracy & Weighted F1:** Support Vector Machine (SVC) leads with **`98.94%` Accuracy** and **`0.9894` Weighted F1**, followed closely by KNN (`98.70%` Accuracy).
+  - **Highest ROC-AUC:** Support Vector Machine (SVC) achieves **`0.9917`**, followed closely by Logistic Regression (**`0.9916`**).
+  - **Precision / Recall Sensitivity Trade-offs:**
+    - **Logistic Regression** and **Gaussian Naive Bayes** prioritize recall (**`0.9800`** and **`0.9367`**), detecting 294 and 281 out of 300 fraud transactions, but yield higher false positive alarms (893 and 982 false alarms).
+    - **K-Nearest Neighbors** prioritizes precision (**`0.7356`**, only 23 false alarms), but misses 236 out of 300 frauds (Recall = **`0.2133`**).
+    - **Decision Tree** offers a balanced intermediate trade-off (Recall = **`0.8433`**, Precision = **`0.3059`**).
+    - **Support Vector Machine (SVC)** demonstrates the strongest balanced performance (Precision = **`0.6457`**, Recall = **`0.6500`**, 195 frauds detected, 107 false alarms).
+  - **Imbalanced Domain Caution:** In a severe 1.5% fraud distribution, a trivial majority-class baseline would attain 98.50% accuracy with 0 frauds caught; therefore, model selection must reflect business tolerance for financial fraud losses (Recall) versus customer friction from false denials (Precision), rather than accuracy alone.
+
+---
+
 ## Repository Structure
 - `notebooks/`:
   - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–6: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, Logistic Regression, KNN, Gaussian Naive Bayes, Decision Tree & Support Vector Machine).
+  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–7: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 5 Classification Algorithms & Model Evaluation).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
   - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
