@@ -94,6 +94,17 @@ $$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Pric
 
 ---
 
+## Ridge Regression (Completed)
+- **Model:** L2-Regularized `Ridge` (`sklearn.linear_model`, default $\alpha=1.0$).
+- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
+- **Evaluation Performance:**
+  - **$R^2$ Score:** **`0.9093`** (Matches Linear Regression at $90.93\%$ variance explained).
+  - **Root Mean Squared Error (RMSE):** **`$1,217.70`** (Slight numerical improvement over \$1,217.74).
+  - **Mean Absolute Error (MAE):** **`$797.76`**
+- **Domain Observation:** Ridge Regression performs almost identically to Linear Regression because the primary linear relationship between carat/size and price is already strong. The L2 penalty stabilizes the model against multicollinearity between interrelated geometric features (`carat`, `volume`, $x, y, z$).
+
+---
+
 ---
 
 # Fraud Detection Using Machine Learning Classification
@@ -230,7 +241,7 @@ $$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fr
 
 ## Repository Structure
 - `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing & Linear Regression).
+  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–6: Loading, Audit, EDA, Cleaning, Preprocessing, Linear Regression & Ridge Regression).
   - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 7–11: Loading, Audit, EDA, Cleaning, Feature Engineering & Preprocessing).
 - `datasets/`:
   - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
