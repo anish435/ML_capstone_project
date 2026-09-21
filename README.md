@@ -143,9 +143,11 @@ All models were evaluated on the identical held-out test partition ($10,755$ sam
 - **Tuned Gradient Boosting:** Hyperparameter optimization via 3-fold training CV (`n_estimators=150, learning_rate=0.1, max_depth=5`, CV $R^2 = 0.9819$) significantly enhanced performance: test $R^2$ improved to **`0.9817`**, test RMSE dropped from \$632.82 to **`$546.70`** (a $13.6\%$ error reduction), and test MAE dropped to **`$284.00`**.
 - **Tuned Random Forest:** Tuned with `n_estimators=150, max_depth=None, min_samples_split=5` (CV $R^2 = 0.9811$), achieving **`0.9810`** test $R^2$, **`$556.70`** RMSE, and the lowest overall test MAE at **`$269.44`**.
 - **Diagnostic Visualisations:**
-  - *Predicted vs. Actual Plot:* Points cluster tightly along the $45^\circ$ diagonal line ($\text{Predicted} = \text{Actual}$) with high fidelity below \$10,000.
-  - *Residual Plot:* Residuals ($y_{\text{test}} - \hat{y}$) are symmetrically dispersed around zero with zero mean bias across all valuation brackets.
-  - *Feature Importance Breakdown:* 3D spatial metrics (`volume` at $62.44\%$ and dimension `y` at $21.53\%$) account for **$83.97\%$** of total predictive importance. Gemological quality grades (`clarity` at $6.34\%$, `carat` at $5.23\%$, `color` at $3.13\%$) form the secondary price modifiers.
+  - *Per-Model Diagnostic Plots:* Dedicated Predicted vs. Actual and Residual scatter plots are implemented for each of the 10 regression models, alongside Feature Importance horizontal bar plots for tree-based models (Decision Tree, Random Forest, Gradient Boosting).
+  - *Best-Model (Random Forest) Diagnostic Plots:*
+    - *Predicted vs. Actual Plot:* Points cluster tightly along the $45^\circ$ diagonal line ($\text{Predicted} = \text{Actual}$) with high fidelity below \$10,000.
+    - *Residual Plot:* Residuals ($y_{\text{test}} - \hat{y}$) are symmetrically dispersed around zero with zero mean bias across all valuation brackets.
+    - *Feature Importance Breakdown:* 3D spatial metrics (`volume` at $62.44\%$ and dimension `y` at $21.53\%$) account for **$83.97\%$** of total predictive importance. Gemological quality grades (`clarity` at $6.34\%$, `carat` at $5.23\%$, `color` at $3.13\%$) form the secondary price modifiers.
 
 ---
 
