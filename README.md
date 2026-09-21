@@ -1,501 +1,186 @@
-# Diamond Price Prediction Using Machine Learning Regression
+# 23CSE301 Machine Learning Capstone
 
-## Project Overview
-This repository contains the Machine Learning Capstone Regression project focused on predicting diamond market prices based on physical and gemological characteristics.
+End-to-end machine-learning study for the 2026-27 `23CSE301 Machine Learning` capstone covering Continuous Valuation (Regression) and Imbalanced Financial Decisioning (Classification).
 
-### Formulated Regression Task:
-$$\text{Diamond Characteristics } (X) \longrightarrow \text{Predict Diamond Price } (y)$$
+## Team
 
-- **Target Variable ($y$):** `price` (Continuous price in USD, ranging from \$326 to \$18,823).
-- **Predictors ($X$):** 9 attributes including physical weight (`carat`), proportions (`depth`, `table`), millimeter dimensions (`x`, `y`, `z`), and quality grades (`cut`, `color`, `clarity`).
-- **Dataset:** UCI / StatLib Diamonds Dataset (`datasets/diamonds.csv`, 53,940 records).
+| Team member | Registration / Roll number | Review 1 responsibility |
+|---|---|---|
+| Darisa Nageswar | CB.SC.U4CSE24113 | Diamond Volume Feature Engineering, Fraud Dataset Audit & EDA, Classification Naive Bayes, Regression Ensemble Tuning |
+| Kotikalapudi Anish | CB.SC.U4CSE24125 | Diamond Dataset Audit & EDA, Classification Feature Engineering, Regression Baseline Models & Integration |
+| Vennapusa Sunil Kumar Reddy | CB.SC.U4CSE24158 | Diamond Data Cleaning & Preprocessing, Fraud Data Cleaning & Scaling, SVM & Decision Tree Classification |
 
----
+Implementation tasks were divided collaboratively among the team members, and the complete pipeline was implemented successfully with all members participating in review and verification.
 
-## Milestone 1: Dataset Loading & Audit (Completed)
-- **Data Ingestion:** Ingested the complete `datasets/diamonds.csv` ($53,940$ rows $\times$ $10$ columns).
-- **Integrity Audit:**
-  - **Missing Values:** Exactly **0 missing values (0.00%)** across all 10 columns.
-  - **Duplicate Records:** Identified **146 exact duplicate rows (0.27%)** flagged for the cleaning milestone.
-  - **Data Types:** 6 numerical float features (`carat`, `depth`, `table`, `x`, `y`, `z`), 3 categorical string features (`cut`, `color`, `clarity`), and 1 integer target (`price`).
-- **Target Analysis:**
-  - Mean: \$3,932.80, Median: \$2,401.00, Standard Deviation: \$3,989.44.
-  - Skewness: $+1.6184$ (right-skewed distribution with a high-value tail up to \$18,823).
-  - 11,602 unique price levels confirming continuous regression behavior.
-- **Visual Distribution:** Rendered target histogram and KDE with mean/median markers.
+## Review 1 problems
 
----
+### Regression: diamond market price estimation
 
-## Milestone 2: Exploratory Data Analysis (Completed)
-- **Feature Distributions:**
-  - **Numerical:** Histograms show `carat` and `price` are strongly right-skewed; `depth` (mean $\approx 61.7\%$) and `table` (mean $\approx 57.5\%$) exhibit symmetric bell-shaped distributions; `x`, `y`, `z` show multimodal dimensional patterns.
-  - **Categorical:** Count plots show `Ideal` ($39.95\%$) and `Premium` ($25.57\%$) dominate cut grades; colors `G`, `E`, `F` are most frequent; clarities `SI1`, `VS2`, and `SI2` make up over $63\%$ of stones.
-- **Correlation Heatmap:**
-  - `carat` has the strongest positive correlation with `price` ($r = 0.92$), followed by dimensions `x` ($0.88$), `y` ($0.87$), and `z` ($0.86$).
-  - Substantial multi-collinearity exists between $x, y, z$ and $carat$ ($r > 0.95$).
-  - Proportions `depth` ($r = -0.01$) and `table` ($r = 0.13$) have minimal linear correlation with price.
-- **Feature vs. Target Relationships:**
-  - **Carat vs. Price:** Upward non-linear curve showing exponential price increases as carat weight rises.
-  - **Dimension X vs. Price:** Strong positive correlation; confirms data entry anomalies at $x = 0$.
-- **Categorical Price Variations:**
-  - Boxplots across `cut`, `color`, and `clarity` show variations in price, with apparent counter-intuitive medians explained by confounding with diamond carat size.
-- **Outlier Inspection:**
-  - Identified severe dimensional anomalies (e.g. $y > 30\text{ mm}$, $z > 30\text{ mm}$, and 20 records with $x, y, \text{ or } z = 0$) flagged for removal in the upcoming cleaning milestone.
+Predict the market price of cut diamonds (`price`, USD) based on physical mass (`carat`), proportions (`depth`, `table`), millimeter dimensions (`x`, `y`, `z`), and official gemological quality grades (`cut`, `color`, `clarity`). Diamond pricing exhibits strong non-linear curvature: while stone mass and spatial volume dictate baseline price thresholds, qualitative grade multipliers induce significant valuation jumps.
 
----
+The study uses an 80:20 train/test partition ($43,017$ training samples, $10,755$ held-out test samples) stratified across 5 quantile price bins to ensure identical target distributions across splits.
 
-## Milestone 3: Data Cleaning (Completed)
-- **Duplicate Removal:** Checked and removed **146 exact duplicate rows**, reducing sample size from $53,940$ to $53,794$ to prevent data leakage between train and test sets.
-- **Invalid Physical Dimensions:** Filtered out **19 records** with physically impossible zero dimensions ($x \le 0$, $y \le 0$, or $z \le 0$), leaving $53,775$ rows.
-- **Typographical Errors:** Removed **3 extreme dimensional transposition errors** ($y > 20\text{ mm}$ or $z > 20\text{ mm}$), leaving **$53,772$ clean rows**.
-- **Outlier Assessment (IQR Method):**
-  - Evaluated statistical outliers across all numerical columns.
-  - Justified keeping legitimate high-carat and high-price observations to preserve true market price variation without artificial truncation.
-- **Missing Value Status:** Verified $0$ missing values across all columns; no imputation required.
-- **In-Memory Pipeline:** Cleaned data is maintained directly in-memory as `df_cleaned` throughout the notebook pipeline. No intermediate dataset files are created, keeping `datasets/diamonds.csv` as the sole dataset file.
+Source: [Kaggle Diamonds Dataset](https://www.kaggle.com/datasets/resulcaliskan/diamonds). Dataset file: [`datasets/diamonds.csv`](datasets/diamonds.csv) ($53,940$ original records $\rightarrow$ $53,772$ clean records, 10 features).
 
----
+### Classification: credit card transaction fraud detection
 
-## Milestone 4: Feature Engineering (Completed)
-- **Engineered Feature:** `volume = x * y * z` (diamond bounding volume in $\text{mm}^3$).
-- **Domain Rationale:** Combines length ($x$), width ($y$), and depth ($z$) into a single physical measurement of 3D stone size, directly mirroring the physical mass-density relationship ($\text{Mass} = \text{Density} \times \text{Volume}$).
-- **Feature Characteristics:**
-  - Min volume: $31.71\text{ mm}^3$, Max volume: $790.13\text{ mm}^3$, Mean volume: $129.78\text{ mm}^3$.
-  - Missing values: Exactly **0**.
-  - Correlation with price: **$r = 0.9235$** (strong non-linear upward curve).
-- **Zero Target Leakage:** Derived exclusively from physical dimensions ($x, y, z$) without using target `price`.
-- **Integrated Pipeline:** Feature created on `df_cleaned` before train/test splitting and standardized alongside other numerical features, yielding **10 total preprocessed features** ($7$ numerical + $3$ categorical).
+Classify transactional risk status as legitimate (`0`) or fraudulent (`1`) using transaction details, customer account history, device characteristics, geography, and velocity metrics. Detecting transaction fraud presents an extreme statistical challenge due to severe class imbalance ($98,500$ legitimate transactions / $98.50\%$ vs. $1,500$ fraudulent transactions / $1.50\%$, an imbalance ratio of $65.67:1$).
 
----
+The study uses an 80:20 stratified partition ($80,000$ training transactions, $20,000$ held-out test transactions) to preserve the exact $1.50\%$ fraud prevalence in both splits. Because a trivial majority-class baseline would attain $98.50\%$ accuracy while detecting zero frauds, model evaluation strictly prioritizes Recall, Precision, Weighted F1, and ROC-AUC over naive accuracy.
 
-## Milestone 5: Train/Test Split and Preprocessing (Completed)
-- **Train/Test Partitioning:**
-  - 80:20 split with `random_state=42`.
-  - Training set: **43,017 samples**; Testing set: **10,755 samples**.
-  - Target stratification implemented using 5 quantile price bins to ensure balanced price distributions across both splits.
-  - Stratification verified: Training median price (\$2,400.00) and test median price (\$2,407.00) match closely.
-- **Categorical Feature Encoding:**
-  - Applied `OrdinalEncoder` to `cut`, `color`, and `clarity`, matching official gemological grading hierarchies (`Fair` < `Good` < ... < `Ideal`; `J` < `I` < ... < `D`; `I1` < `SI2` < ... < `IF`).
-- **Numerical Feature Scaling:**
-  - Standardized all 6 numerical features (`carat`, `depth`, `table`, `x`, `y`, `z`) using `StandardScaler` to mean 0 and variance 1.
-- **Zero-Leakage Preprocessing Architecture:**
-  - `ColumnTransformer` fitted **strictly on training data (`X_train`)** and applied to transform both `X_train` and `X_test`.
-  - Zero test set information leaked into the scaling or encoding parameters.
+Source: [HuggingFace Lead-AI Fraud Detection Dataset v2](https://huggingface.co/datasets/arun-gharami/lead-ai-fraud-detection-dataset-v2/tree/main/data). Dataset file: [`datasets/fraud_detection.parquet`](datasets/fraud_detection.parquet) ($100,000$ records, $21$ columns $\rightarrow$ $47$ preprocessed features).
 
----
+## Current Review 1 progress
 
-## Milestone 6: Regression Models (Completed)
+- **Phase 0:** Problem framing, target selection, leakage audit, and evaluation protocols defined for both tracks.
+- **Phase 1:** Repository structure, verified dataset acquisition, integrity audits, and reproducible environment established.
+- **Phase 2:** Dataset audit, exploratory data analysis (EDA), cleaning decisions, deterministic feature engineering (`volume` for diamonds; `amount_ratio` for fraud), fixed 80:20 splits, and leakage-safe preprocessing pipelines implemented in both notebooks.
+- **Phase 3:** All ten regression algorithms and all five Classification Part-A algorithms implemented, tuned via 3-fold training cross-validation, evaluated on held-out test sets, and documented.
 
-### 6.1 Linear Regression
-- **Model:** Ordinary Least Squares `LinearRegression` (`sklearn.linear_model`).
-- **Data Configuration:** Evaluated on the standardized, ordinal-encoded test split ($10,755$ samples) using 10 preprocessed features without modifying or re-splitting data.
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9093`** (Explains $90.93\%$ of total price variance).
-  - **Root Mean Squared Error (RMSE):** **`$1,217.74`**
-  - **Mean Absolute Error (MAE):** **`$797.70`**
-- **Domain Observation:** Strong baseline linearity established; non-linear residual patterns indicate potential for regularized or non-linear tree-based models to achieve higher precision.
+Both Review 1 notebooks have been executed from top to bottom with visible outputs and zero execution errors.
 
----
+## Repository structure
 
-### 6.2 Ridge Regression
-- **Model:** L2-Regularized `Ridge` (`sklearn.linear_model`, default $\alpha=1.0$).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9093`** (Matches Linear Regression at $90.93\%$ variance explained).
-  - **Root Mean Squared Error (RMSE):** **`$1,217.70`** (Slight numerical improvement over \$1,217.74).
-  - **Mean Absolute Error (MAE):** **`$797.76`**
-- **Domain Observation:** Ridge Regression performs almost identically to Linear Regression because the primary linear relationship between carat/size and price is already strong. The L2 penalty stabilizes the model against multicollinearity between interrelated geometric features (`carat`, `volume`, $x, y, z$).
+```text
+datasets/
+  diamonds.csv             Raw diamond regression dataset (53,940 records x 10 features)
+  fraud_detection.parquet  Raw transaction fraud classification dataset (100,000 records x 21 features)
+notebooks/
+  regression.ipynb         Review 1 regression track (10 algorithms, tuning, visualizations)
+  classification.ipynb     Review 1 classification track (Part-A 5 algorithms, tuning, evaluation)
+README.md                  Project overview, problem formulations, results, and setup instructions
+requirements.txt           Pinned Python dependencies
+```
 
----
+## Environment setup
 
-### 6.3 Lasso Regression
-- **Model:** L1-Regularized `Lasso` (`sklearn.linear_model`, `max_iter=2000`, `tol=0.01`, `random_state=42`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9091`** (Explains $90.91\%$ of total price variance).
-  - **Root Mean Squared Error (RMSE):** **`$1,219.03`**
-  - **Mean Absolute Error (MAE):** **`$799.20`**
-- **Domain Observation:** Lasso achieves consistent ~90.9% accuracy matching Linear and Ridge Regression. While L1 regularization has the ability to zero out redundant features, all 10 diamond attributes (especially carat, dimensions, cut, color, clarity, and volume) contribute meaningful explanatory power and are retained.
+Python 3.10+ (tested on Python 3.12 / 3.13) is used for the reproducible environment. All dependencies are pinned in [`requirements.txt`](requirements.txt) to guarantee deterministic execution across platforms:
 
----
+```bash
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Linux / macOS:
+source .venv/bin/activate
 
-### 6.4 ElasticNet Regression
-- **Model:** ElasticNet combining L1 & L2 penalties (`sklearn.linear_model`, default $\alpha=1.0$, $\text{l1\_ratio}=0.5$, `random_state=42`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.8647`** (Explains $86.47\%$ of total price variance).
-  - **Root Mean Squared Error (RMSE):** **`$1,487.62`**
-  - **Mean Absolute Error (MAE):** **`$1,008.65`**
-- **Domain Observation:** Under default parameters ($\alpha=1.0, \text{l1\_ratio}=0.5$), the dual regularization applies stronger shrinkage compared to Ridge or Lasso alone, causing slight underfitting. In high-dimensional multicollinear settings, ElasticNet provides robust feature grouping; hyperparameter tuning of $\alpha$ allows it to match the ~91% baseline accuracy.
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
----
+### Required Python dependencies
+- `pandas==3.0.3` (DataFrame manipulation and tabular data ingestion)
+- `numpy==2.4.6` (Vectorized numerical computations)
+- `scikit-learn==1.9.0` (Preprocessing pipelines, regression, and classification estimators)
+- `matplotlib==3.11.0` (Static data visualization and diagnostic plotting)
+- `seaborn==0.13.2` (Statistical charts, KDE distributions, and confusion matrices)
+- `pyarrow==24.0.0` (Apache Parquet columnar format serialization)
+- `jupyter==1.1.1` (Interactive notebook development environment)
+- `nbformat==5.10.4` & `nbclient==0.11.0` (Notebook execution engine)
 
-### 6.5 Polynomial Regression ($d=2$)
-- **Model:** Degree-2 `PolynomialFeatures` + `LinearRegression` (`sklearn.preprocessing`, `sklearn.linear_model`).
-- **Data Configuration:** `PolynomialFeatures(degree=2)` fitted **strictly on `X_train_processed`** ($43,017$ samples $\rightarrow$ $66$ polynomial and interaction features) and transformed onto `X_test_processed` ($10,755$ samples $\rightarrow$ $66$ features) with zero data leakage.
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9642`** (Explains $96.42\%$ of total price variance—major improvement over linear baseline).
-  - **Root Mean Squared Error (RMSE):** **`$765.52`** (Reduced by $37.1\%$ from \$1,217.74).
-  - **Mean Absolute Error (MAE):** **`$453.21`** (Reduced by $43.2\%$ from \$797.70).
-- **Domain Observation:** Capturing second-order non-linear terms (such as $\text{carat}^2$ and dimension interactions) dramatically improves model fit. Because diamond price scales exponentially with carat size and stone volume, polynomial terms model the upward curvature accurately without requiring complex black-box architectures.
+## Dataset provenance and preprocessing pipelines
 
----
+### Regression track: diamonds dataset
+- **Ingestion & Integrity Audit:** Loaded $53,940$ rows $\times$ $10$ columns. Verified exactly **0 missing values (0.00%)**. Identified $146$ exact duplicate rows ($0.27\%$). Target `price` spans from \$326 to \$18,823 (mean \$3,932.80, median \$2,401.00, skewness $+1.6184$).
+- **Data Cleaning:** Removed $146$ duplicates, $19$ records with physically impossible zero dimensions ($x \le 0, y \le 0, \text{ or } z \le 0$), and $3$ extreme typographical measurement errors ($y > 20\text{ mm}$ or $z > 20\text{ mm}$), yielding **$53,772$ clean records** in `df_cleaned`. Raw CSV is maintained unmodified.
+- **Feature Engineering:** Constructed spatial volume $\text{volume} = x \times y \times z$ ($\text{mm}^3$) based on the physical mass-density relationship ($\text{Mass} = \text{Density} \times \text{Volume}$). Exhibits a correlation of **$r = 0.9235$** with price, outperforming individual dimensional metrics.
+- **Preprocessing Pipeline:** `ColumnTransformer` fitted **strictly on `X_train`** ($43,017$ samples) and applied to `X_test` ($10,755$ samples). Applied `OrdinalEncoder` to `cut`, `color`, and `clarity` preserving official grading hierarchies; applied `StandardScaler` to all 7 continuous features (`carat`, `depth`, `table`, `x`, `y`, `z`, `volume`).
 
-### 6.6 Decision Tree Regressor
-- **Model:** Non-parametric `DecisionTreeRegressor` (`sklearn.tree`, default parameters, `random_state=42`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9661`** (Explains $96.61\%$ of total price variance—highest accuracy across all models).
-  - **Root Mean Squared Error (RMSE):** **`$745.08`** (Lowest RMSE achieved).
-  - **Mean Absolute Error (MAE):** **`$360.01`** (Cut in more than half compared to baseline linear models of ~\$798).
-- **Domain Observation:** Decision trees partition feature space into granular hierarchical subgroups based on carat size, physical cut, and clarity grades. This localized partitioning captures sharp, non-linear pricing jumps across premium diamond segments without imposing linear constraints.
-
----
-
-### 6.7 Random Forest Regressor
-- **Model:** Ensemble `RandomForestRegressor` (`sklearn.ensemble`, 100 estimators, `random_state=42`, `n_jobs=-1`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9810`** (Explains $98.10\%$ of total price variance—highest accuracy achieved across all models).
-  - **Root Mean Squared Error (RMSE):** **`$557.43`** (Substantial error reduction from \$745.08).
-  - **Mean Absolute Error (MAE):** **`$270.00`** (Lowest average error across the entire regression benchmark).
-- **Domain Observation:** Random Forest aggregates predictions across 100 decorrelated decision trees, dramatically reducing variance and eliminating the risk of individual tree overfitting. It accurately models complex price curves across carat weight, volume, and cut/color/clarity interactions.
-
----
-
-### 6.8 Gradient Boosting Regressor
-- **Model:** Sequential Boosting `GradientBoostingRegressor` (`sklearn.ensemble`, 100 estimators, `random_state=42`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9755`** (Explains $97.55\%$ of total price variance—outperforms individual decision trees and polynomial regression).
-  - **Root Mean Squared Error (RMSE):** **`$632.82`**
-  - **Mean Absolute Error (MAE):** **`$349.89`** (Top-tier error reduction).
-- **Domain Observation:** Gradient Boosting builds trees sequentially, where each successive estimator directly optimizes against the pseudo-residuals of the previous ensemble stage. This targeted error-correction allows the model to handle subtle non-linear interactions across cut, color, clarity, and dimensional volume effectively.
-
----
-
-### 6.9 Support Vector Regressor (SVR)
-- **Model:** Kernelized `SVR` (`sklearn.svm`, default RBF kernel, $C=1.0, \epsilon=0.1$).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.6015`** (Explains $60.15\%$ of total price variance).
-  - **Root Mean Squared Error (RMSE):** **`$2,552.78`**
-  - **Mean Absolute Error (MAE):** **`$1,220.11`**
-- **Domain Observation:** Standard SVR with default $C=1.0$ underperforms because the penalty parameter is insufficiently scaled relative to unscaled price magnitudes reaching \$18,800. While SVR effectively captures non-linear manifolds, competitive performance on large pricing datasets requires hyperparameter optimization of $C$ or target normalization.
-
----
-
-### 6.10 K-Nearest Neighbors Regressor
-- **Model:** Distance-based `KNeighborsRegressor` (`sklearn.neighbors`, $k=5$, Euclidean metric, `n_jobs=-1`).
-- **Data Configuration:** Evaluated on the identical standardized, ordinal-encoded test split ($10,755$ samples, $10$ features).
-- **Evaluation Performance:**
-  - **$R^2$ Score:** **`0.9707`** (Explains $97.07\%$ of total price variance—outperforms polynomial regression and single decision trees).
-  - **Root Mean Squared Error (RMSE):** **`$692.50`**
-  - **Mean Absolute Error (MAE):** **`$368.71`** (Top-tier local prediction accuracy).
-- **Domain Observation:** Diamond valuation closely mirrors KNN logic: stones are appraised against historical market comparables with similar carat size, dimensions, and grading levels. By calculating Euclidean distances across standardized features, KNN effectively averages the 5 nearest neighborhood stones to deliver accurate price estimates.
-
----
-
-## Milestone 7: Comparative Evaluation (Completed)
-- **Evaluation Scope:** Consolidated comparison of all 10 trained regression models evaluated on the identical 80:20 test split ($10,755$ samples, $10$ features), ranked by $R^2$ score.
-- **Summary Leaderboard:**
-
-| Rank | Model | $R^2$ | RMSE | MAE |
-| :-: | :--- | :---: | :---: | :---: |
-| 1 | **Random Forest Regressor** | **0.9810** | **$557.43** | **$270.00** |
-| 2 | **Gradient Boosting Regressor** | **0.9755** | **$632.82** | **$349.89** |
-| 3 | **K-Nearest Neighbors Regressor** | **0.9707** | **$692.50** | **$368.71** |
-| 4 | **Decision Tree Regressor** | **0.9661** | **$745.08** | **$360.01** |
-| 5 | **Polynomial Regression ($d=2$)** | **0.9642** | **$765.52** | **$453.21** |
-| 6 | **Ridge Regression** | **0.9093** | **$1,217.70** | **$797.76** |
-| 7 | **Linear Regression** | **0.9093** | **$1,217.74** | **$797.70** |
-| 8 | **Lasso Regression** | **0.9091** | **$1,219.03** | **$799.20** |
-| 9 | **ElasticNet Regression** | **0.8647** | **$1,487.62** | **$1,008.65** |
-| 10 | **Support Vector Regressor (SVR)** | **0.6015** | **$2,552.78** | **$1,220.11** |
-
-- **Key Takeaways:**
-  1. Random Forest Regressor gave the best result with the highest $R^2$ (0.9810) and the lowest RMSE ($557.43) and MAE ($270.00).
-  2. Gradient Boosting, KNN, Decision Tree, and Polynomial Regression also performed well and were better than the basic linear models.
-  3. Linear, Ridge, and Lasso gave similar results, while ElasticNet and SVR performed worse. SVR may improve after hyperparameter tuning.
-
----
-
-## Milestone 8: Hyperparameter Tuning (Completed)
-- **Tuning Methodology:** Applied 3-fold cross-validation (`GridSearchCV`, `scoring='r2'`, `n_jobs=-1`) strictly on the training partition (`X_train_processed`, `y_train`) to optimize key hyperparameters for the top two performing ensemble models.
-- **Tuned Models & Best Parameters:**
-  - **Random Forest Regressor:** `{'n_estimators': 150, 'max_depth': None, 'min_samples_split': 5}`
-    - Best Cross-Validation $R^2$: `0.9811`
-  - **Gradient Boosting Regressor:** `{'n_estimators': 150, 'learning_rate': 0.1, 'max_depth': 5}`
-    - Best Cross-Validation $R^2$: `0.9819`
-- **Before vs. After Tuning Comparison:**
-
-| Model | Before $R^2$ | After $R^2$ | Before RMSE | After RMSE | Before MAE | After MAE |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Random Forest Regressor** | 0.9810 | 0.9810 | \$557.43 | \$556.70 | \$270.00 | \$269.44 |
-| **Gradient Boosting Regressor** | 0.9755 | 0.9817 | \$632.82 | \$546.70 | \$349.89 | \$284.00 |
-
-- **Key Observations:**
-  1. **Gradient Boosting Improvement:** Hyperparameter tuning significantly enhanced the Gradient Boosting Regressor. Its $R^2$ score improved from 0.9755 to 0.9817, test RMSE decreased from \$632.82 to \$546.70, and test MAE dropped from \$349.89 to \$284.00. Tuning `max_depth` to 5 and `n_estimators` to 150 allowed the model to capture deeper interactions between diamond features.
-  2. **Random Forest Stability:** The default Random Forest model already had strong hyperparameters. Tuning produced minor refinements in error metrics, improving test RMSE from \$557.43 to \$556.70 and test MAE from \$270.00 to \$269.44 while holding $R^2$ steady at 0.9810.
-  3. **Overall Comparison:** Post-tuning, Gradient Boosting achieved the highest $R^2$ (0.9817) and lowest RMSE (\$546.70), while Random Forest achieved the lowest MAE (\$269.44). Both tuned models demonstrate exceptional predictive accuracy for diamond valuation.
-
----
-
-## Milestone 9: Model Visualisations (Completed)
-- **Visualisation Focus:** Evaluated the best-performing model identified from comparative evaluation (**Random Forest Regressor**, $R^2 = 0.9810$) on the hold-out test set ($10,755$ samples).
-- **Key Diagnostic Visualisations:**
-  1. **Predicted vs. Actual Plot:**
-     - Scatter plot comparing actual diamond prices against Random Forest predictions against a $45^\circ$ reference diagonal line ($\text{Predicted} = \text{Actual}$).
-     - Data points tightly cluster along the reference diagonal across the entire price range with high precision under \$10,000 and expected wider market variance for rare stones above \$12,000.
-  2. **Residual Plot:**
-     - Scatter plot of residuals ($\text{residual} = y_{\text{test}} - y_{\text{pred}}$) plotted against predicted values relative to a horizontal reference line ($\text{residual} = 0$).
-     - Confirms an unbiased model: residuals are symmetrically centered around zero without systematic under- or over-estimation across all prediction tiers.
-  3. **Feature Importance Ranking:**
-     - Extracted `feature_importances_` from the trained Random Forest ensemble across all 10 preprocessed features.
-     - **Size & Mass Dominance:** 3D physical size features (`volume` at $62.44\%$ and dimension `y` at $21.53\%$, combined with `carat` at $5.23\%$) account for ~90% of total predictive importance.
-     - **Quality Multipliers:** `clarity` ($6.34\%$) and `color` ($3.13\%$) provide secondary value adjustments, while proportions (`depth`, `table`, `cut`) contribute under $1\%$ each.
-
----
-
-# Fraud Detection Using Machine Learning Classification
-
-## Project Overview
-This track focuses on detecting fraudulent financial transactions using customer, account, transaction, and behavioral features.
-
-### Formulated Classification Task:
-$$\text{Transaction & Customer Attributes } (X) \longrightarrow \text{Predict Fraud Status } (y \in \{0, 1\})$$
-
-- **Target Variable ($y$):** `risk_label`
-  - `0` = **Not Fraud** (Legitimate transaction)
-  - `1` = **Fraud** (Fraudulent transaction)
-- **Predictors ($X$):** 20 features covering customer history, transaction context, device, geography, and velocity.
-- **Dataset:** `datasets/fraud_detection.parquet` (100,000 records).
-
----
-
-## Milestone 1: Dataset Loading & Initial Audit (Completed)
-- **Data Ingestion:** Loaded `datasets/fraud_detection.parquet` ($100,000$ rows $\times$ $21$ columns).
-- **Integrity Audit:**
-  - **Missing Values:** Exactly **0 missing values (0.00%)** across all 21 columns.
-  - **Duplicate Records:** Exactly **0 duplicate rows (0.00%)**.
-  - **Data Types:** 10 numerical features, 5 categorical features, 3 binary flag features, 2 identifier features, and 1 integer target (`risk_label`).
-- **Target Analysis:**
-  - **Not Fraud (Class 0):** $98,500$ transactions ($98.50\%$).
-  - **Fraud (Class 1):** $1,500$ transactions ($1.50\%$).
-  - **Imbalance Ratio:** $65.67 : 1$.
-  - Target distribution visualized with count plot; noted that accuracy alone is insufficient for evaluation in extreme imbalance.
-- **Feature Catalog:**
-  - **Identifiers:** `transaction_id`, `customer_id` (flagged for future removal to prevent memorization).
-  - **Numerical:** `transaction_hour`, `transaction_day_of_week`, `account_age_days`, `previous_chargebacks`, `customer_total_transactions_30d`, `customer_risk_score`, `transaction_amount`, `avg_transaction_amount_30d_customer`, `transaction_velocity_1h`, `transaction_velocity_24h`.
-  - **Categorical:** `merchant_category`, `transaction_country`, `device_type`, `transaction_type`, `geo_location_region`.
-  - **Binary Flags:** `is_international`, `is_high_risk_merchant_category`, `is_weekend`.
-- **Notebook:** Created and executed `notebooks/classification.ipynb`.
-
----
-
-## Milestone 2: Exploratory Data Analysis (Completed)
-- **Numerical Feature Distributions (2.1):**
-  - Examined 7 key continuous variables: `transaction_amount`, `customer_risk_score`, `previous_chargebacks`, `customer_total_transactions_30d`, `transaction_velocity_1h`, `transaction_velocity_24h`, and `account_age_days`.
-  - `transaction_amount` is heavily right-skewed with typical purchases under \$500 and a high-value tail up to \$15,000.
-  - `previous_chargebacks` is heavily zero-inflated (nearly 90% of accounts have 0 chargebacks).
-  - `customer_risk_score` displays a bimodal pattern with peaks near 0–1 and 3–4.
-- **Categorical Feature Distributions (2.2):**
-  - `merchant_category`: Evenly balanced across all 10 categories (~10,000 transactions each).
-  - `transaction_country`: US accounts for 55.0% of transactions, followed by UK (12.0%), Canada (8.1%), Australia (6.9%), and India (6.0%).
-  - `device_type`: Mobile dominates with 54.7%, followed by desktop (30.2%), tablet (10.0%), and wearable (5.1%).
-  - `transaction_type`: POS (40.0%) and Online (40.0%) represent the bulk of activity, with ATM and MOTO at 10.0% each.
-- **Target Variable Distribution (2.3):**
-  - Confirmed 98,500 legitimate (98.50%) vs. 1,500 fraudulent (1.50%) transactions ($65.67 : 1$ imbalance).
-  - Established that model evaluation will focus on Recall, Precision, F1-Score, and PR-AUC rather than misleading overall accuracy.
-- **Correlation Analysis (2.4):**
-  - `customer_risk_score` ($r = +0.36$) and `previous_chargebacks` ($r = +0.30$) have the highest linear association with fraud.
-  - Transaction velocity features correlate positively with fraud ($r = +0.14$ for 1h, $r = +0.13$ for 24h) and share moderate collinearity with each other ($r = +0.44$).
-- **Feature vs. Fraud Relationships (2.5 & 2.6):**
-  - **Chargebacks:** Accounts with 0 prior chargebacks are overwhelmingly legitimate (89,876 legitimate vs. only 8 fraud cases); having $\ge 1$ previous chargebacks drastically increases fraud probability.
-  - **Customer Risk Score:** Legitimate transactions have a low median score ($\approx 0.14$), whereas fraudulent transactions exhibit an elevated median score ($\approx 3.45$).
-  - **Transaction Amount:** Fraudulent transactions exhibit higher average (\$1,701.37 vs. \$835.33) and median (\$897.69 vs. \$354.12) purchase amounts.
-- **Categorical Fraud Prevalence (2.7):**
-  - Identified high-risk merchant categories: `gambling` (2.77%), `luxury_goods` (2.76%), `online_services` (2.74%), and `travel` (2.72%).
-  - Identified low-risk everyday categories: `fuel` (0.45%), `grocery` (0.46%), and `restaurant` (0.47%).
-- **EDA Summary (2.8):**
-  - Zero missing values and zero duplicate rows across the entire dataset.
-  - Clear separation signals identified for downstream data cleaning, preprocessing, and model training.
-
----
-
-## Milestone 3: Data Cleaning (Completed)
-- **Missing Values Handling (3.1):**
-  - Checked all 21 columns; confirmed exactly **0 missing values (0.00%)**.
-  - No imputation required; strategy justified to prevent synthetic artifacts in financial transactions.
-- **Duplicate Transactions Check (3.2):**
-  - Verified exact duplicate records; identified **0 duplicate rows (0.00%)**.
-  - All 100,000 unique records preserved; justified that duplicate transactions cause data leakage.
-- **Domain Validity Verification (3.3):**
-  - Executed 7 domain checks on numerical attributes (`transaction_amount <= 0`, `account_age_days < 0`, `customer_total_transactions_30d < 0`, `previous_chargebacks < 0`, `transaction_velocity_1h < 0`, `transaction_velocity_24h < 0`, `customer_risk_score < 0`).
-  - Confirmed 0 invalid values across all checks; all values strictly within valid financial domains.
-- **Outlier Analysis & Strategy (3.4):**
-  - Analyzed statistical outliers via the IQR method across key features (`transaction_amount`, `customer_risk_score`, `account_age_days`, `transaction_velocity_1h`, `transaction_velocity_24h`).
-  - Discovered that **1,496 out of 1,500 total fraud cases (99.73%)** fall in the statistical outlier region of `customer_risk_score`.
-  - Discovered that high-value transactions and velocity bursts carry disproportionately high fraud rates (up to 11.18%).
-  - **Decision:** Retained 100% of legitimate extreme values; 0 outliers removed. Trimming them would catastrophically eliminate the minority fraud signal.
-- **In-Memory Dataset Construction (3.5 & 3.6):**
-  - Maintained cleaned data in-memory as `df_cleaned` ($100,000$ rows $\times$ $21$ columns).
-  - Raw dataset `datasets/fraud_detection.parquet` kept completely unmodified.
-  - Comprehensive Cleaning Summary table embedded in the notebook.
-
----
-
-## Milestone 4: Feature Engineering (Completed)
-- **Engineered Feature:** `amount_ratio`
-- **Mathematical Formulation:**
+### Classification track: fraud detection dataset
+- **Ingestion & Integrity Audit:** Loaded $100,000$ transactions $\times$ $21$ columns. Verified exactly **0 missing values** and **0 duplicate rows**. Target `risk_label` comprises $98,500$ legitimate transactions ($98.50\%$) and $1,500$ fraudulent transactions ($1.50\%$).
+- **Data Cleaning:** Verified 7 financial domain business rules (`transaction_amount <= 0`, `account_age_days < 0`, etc.); verified 100% compliance across all $100,000$ rows. Outlier analysis via IQR revealed that **$99.73\%$ ($1,496$ out of $1,500$) of all fraud cases** reside in the statistical outlier tail of `customer_risk_score`. Zero outliers were removed to preserve the authentic minority signal. Cleaned data is held in-memory as `df_cleaned`.
+- **Feature Engineering:** Constructed spending abnormality ratio:
   $$\text{amount\_ratio} = \frac{\text{transaction\_amount}}{\text{avg\_transaction\_amount\_30d\_customer} + 1}$$
-- **Domain Justification:**
-  - Compares each transaction amount against the customer's personal 30-day spending baseline.
-  - Provides a normalized measure of spending abnormality without referencing the target label `risk_label`.
-  - Smoothing constant ($+1$) guarantees zero division-by-zero errors.
-- **Statistical Validation:**
-  - Minimum: `0.0067`, Maximum: `173.1206`, Mean: `1.3475`, Median: `0.7577`.
-  - Exactly **0 missing values** and **0 infinite values**.
-- **Feature vs. Target Discriminative Power:**
-  - Fraudulent transactions exhibit nearly double the median ratio (**1.39** vs. **0.75**) and 75th percentile (**3.04** vs. **1.51**) compared to legitimate purchases.
-- **Predictor Catalog Update:**
-  - Numerical predictors expanded to 11 features (`num_cols_updated = num_cols + ['amount_ratio']`).
-  - Total input predictors for downstream preprocessing: **19 features** (11 numerical + 5 categorical + 3 binary flags).
+  Captures abnormal deviations from the customer's personal 30-day baseline without label leakage. Fraudulent transactions exhibit nearly double the median ratio ($1.39$ vs. $0.75$).
+- **Preprocessing Pipeline:** `ColumnTransformer` fitted **strictly on `X_train`** ($80,000$ samples). Identifier columns (`transaction_id`, `customer_id`) excluded. Applied `OneHotEncoder(handle_unknown='ignore', sparse_output=False)` to 5 categorical features ($33$ binary dummy columns) and `StandardScaler()` to 11 numerical features $\rightarrow$ **$47$ total preprocessed features**.
+
+## Run the notebooks
+
+```bash
+jupyter lab
+```
+
+Run each notebook from the first cell to the last with the working directory set to the repository root. All random operations use `random_state=42` where applicable.
+
+To execute both notebooks non-interactively and verify complete end-to-end execution:
+
+```bash
+python -m jupyter nbconvert --to notebook --execute --inplace \
+  --ExecutePreprocessor.timeout=600 notebooks/regression.ipynb
+python -m jupyter nbconvert --to notebook --execute --inplace \
+  --ExecutePreprocessor.timeout=600 notebooks/classification.ipynb
+```
+
+## Evaluation principles
+
+- Every algorithm within a track uses the exact same held-out test split ($10,755$ samples for regression; $20,000$ samples for classification).
+- Preprocessing pipelines (`ColumnTransformer`) are fitted strictly on training data only to guarantee zero data leakage.
+- Hyperparameters are optimized strictly through training-set 3-fold cross-validation (`GridSearchCV`).
+- Regression evaluates $R^2$, Root Mean Squared Error (RMSE), and Mean Absolute Error (MAE) across all 10 models, with algorithms ranked by $R^2$.
+- Classification evaluates Accuracy, Precision, Recall, Weighted F1, Confusion Matrix, and ROC-AUC for all 5 Part-A models.
+- Due to extreme $1.50\%$ fraud imbalance, model evaluation emphasizes Recall (fraud capture rate), Precision (false alarm minimization), and ROC-AUC over overall accuracy.
+- The held-out test partition is never accessed during feature selection, scaling calibration, or hyperparameter search.
+
+## Review 1 results
+
+### Regression comparison (10 algorithms)
+
+All models were evaluated on the identical held-out test partition ($10,755$ samples, $10$ preprocessed features), ranked by $R^2$:
+
+| Model | Test R2 | RMSE ($) | MAE ($) | Rank |
+|---|---:|---:|---:|:---:|
+| **Random Forest Regressor** | **0.9810** | **557.43** | **270.00** | **1** |
+| **Gradient Boosting Regressor** | **0.9755** | **632.82** | **349.89** | **2** |
+| **K-Nearest Neighbors Regressor** ($k=5$) | 0.9707 | 692.50 | 368.71 | 3 |
+| **Decision Tree Regressor** | 0.9661 | 745.08 | 360.01 | 4 |
+| **Polynomial Regression** ($d=2$) | 0.9642 | 765.52 | 453.21 | 5 |
+| **Ridge Regression** ($\alpha=1.0$) | 0.9093 | 1,217.70 | 797.76 | 6 |
+| **Linear Regression** (OLS) | 0.9093 | 1,217.74 | 797.70 | 7 |
+| **Lasso Regression** ($\alpha=1.0$) | 0.9091 | 1,219.03 | 799.20 | 8 |
+| **ElasticNet Regression** ($\alpha=1.0, \text{l1\_ratio}=0.5$) | 0.8647 | 1,487.62 | 1,008.65 | 9 |
+| **Support Vector Regressor** (Default SVR) | 0.6015 | 2,552.78 | 1,220.11 | 10 |
+
+#### Hyperparameter tuning & diagnostic analysis
+- **Tuned Gradient Boosting:** Hyperparameter optimization via 3-fold training CV (`n_estimators=150, learning_rate=0.1, max_depth=5`, CV $R^2 = 0.9819$) significantly enhanced performance: test $R^2$ improved to **`0.9817`**, test RMSE dropped from \$632.82 to **`$546.70`** (a $13.6\%$ error reduction), and test MAE dropped to **`$284.00`**.
+- **Tuned Random Forest:** Tuned with `n_estimators=150, max_depth=None, min_samples_split=5` (CV $R^2 = 0.9811$), achieving **`0.9810`** test $R^2$, **`$556.70`** RMSE, and the lowest overall test MAE at **`$269.44`**.
+- **Diagnostic Visualisations:**
+  - *Predicted vs. Actual Plot:* Points cluster tightly along the $45^\circ$ diagonal line ($\text{Predicted} = \text{Actual}$) with high fidelity below \$10,000.
+  - *Residual Plot:* Residuals ($y_{\text{test}} - \hat{y}$) are symmetrically dispersed around zero with zero mean bias across all valuation brackets.
+  - *Feature Importance Breakdown:* 3D spatial metrics (`volume` at $62.44\%$ and dimension `y` at $21.53\%$) account for **$83.97\%$** of total predictive importance. Gemological quality grades (`clarity` at $6.34\%$, `carat` at $5.23\%$, `color` at $3.13\%$) form the secondary price modifiers.
 
 ---
 
-## Milestone 5: Preprocessing (Encoding, Scaling & Splitting) (Completed)
-- **Stratified Train/Test Partitioning:**
-  - 80:20 split with `random_state=42` and `stratify=y`.
-  - **Training Set:** 80,000 transactions (78,800 legitimate / 98.50%, 1,200 fraud / 1.50%).
-  - **Testing Set:** 20,000 transactions (19,700 legitimate / 98.50%, 300 fraud / 1.50%).
-  - Stratification perfectly preserved without artificial resampling or data distortion.
-- **Feature Identification (19 Predictors):**
-  - **Numerical (11):** 10 base features + engineered `amount_ratio`.
-  - **Categorical (5):** `merchant_category`, `transaction_country`, `device_type`, `transaction_type`, `geo_location_region`.
-  - **Binary Flags (3):** `is_international`, `is_high_risk_merchant_category`, `is_weekend`.
-  - **Excluded Identifiers:** `transaction_id` and `customer_id` omitted from $X$ to prevent memorization shortcuts.
-- **Categorical Feature Encoding:**
-  - Applied `OneHotEncoder(handle_unknown='ignore', sparse_output=False)` fitted **only** on `X_train`.
-  - Expanded 5 categorical variables into 33 binary indicator columns (`(80000, 33)` and `(20000, 33)`).
-- **Numerical Feature Scaling:**
-  - Applied `StandardScaler()` fitted **only** on `X_train`.
-  - Standardized 11 numerical features to mean 0 and unit variance (`(80000, 11)` and `(20000, 11)`).
-- **Final Preprocessed Pipeline:**
-  - Unified `ColumnTransformer` fitted strictly on `X_train` to generate `X_train_processed` (`80,000 x 47`) and `X_test_processed` (`20,000 x 47`).
-  - Zero missing values, matching feature dimensions across splits.
-- **Data Leakage Audit:**
-  - Full 6-point verification passed: splitting preceded transformation; encoders/scalers fitted exclusively on training data; test set only transformed; target `risk_label` strictly isolated; identifiers excluded.
+### Classification Part A comparison (5 algorithms)
 
----
+All models were evaluated on the identical held-out test partition ($20,000$ transactions, $47$ preprocessed features):
 
----
+| Rank | Model | Test Accuracy | Precision | Recall | Weighted F1 | ROC-AUC | Frauds Caught (out of 300) | False Alarms |
+|:---:|---|---:|---:|---:|---:|---:|:---:|:---:|
+| 1 | **Support Vector Machine** ($C=10$, RBF) | **0.9894** | 0.6457 | 0.6500 | **0.9894** | **0.9917** | 195 | **107** |
+| 2 | **K-Nearest Neighbors** ($k=5$) | 0.9870 | **0.7356** | 0.2133 | 0.9835 | 0.8704 | 64 | **23** |
+| 3 | **Decision Tree** (`max_depth`=10) | 0.9689 | 0.3059 | 0.8433 | 0.9760 | 0.9150 | 253 | 574 |
+| 4 | **Logistic Regression** (Balanced) | 0.9550 | 0.2477 | **0.9800** | 0.9679 | 0.9916 | **294** | 893 |
+| 5 | **Gaussian Naive Bayes** | 0.9499 | 0.2225 | 0.9367 | 0.9647 | 0.9781 | 281 | 982 |
 
-## Milestone 6: Classification Models (In Progress)
+#### Hyperparameter tuning & trade-off analysis
+- **Support Vector Machine (SVC):** Parameter search across $C \in \{0.1, 1, 10\}$ and kernels identified **$C=10, \text{kernel}='rbf'$** as optimal ($98.94\%$ test accuracy). Delivers the strongest enterprise trade-off: intercepts **$65.0\%$** of all frauds ($195/300$) with only **$107$** false alarms, while leading the benchmark across Accuracy (`0.9894`), Weighted F1 (`0.9894`), and ROC-AUC (`0.9917`).
+- **K-Nearest Neighbors (KNN):** Neighborhood tuning identified **$k=5$** as optimal ($98.705\%$ accuracy). Maximizes Precision (**`0.7356`**, only $23$ false alarms), but suffers from low Recall (**`0.2133`**), missing $236$ out of $300$ fraudulent transactions due to neighborhood dilution by the dominant majority class.
+- **Decision Tree Classifier:** Depth optimization identified **`max_depth=10`** as optimal ($96.89\%$ test accuracy). Top split visualization confirms `customer_risk_score` and `previous_chargebacks` form the root decision boundaries, detecting **$253$** fraud cases (Recall: `0.8433`).
+- **Logistic Regression & Naive Bayes:** Inversely weighted Logistic Regression and Gaussian Naive Bayes maximize Recall (**`0.9800`** and **`0.9367`**), detecting $294$ and $281$ frauds, but generate high false alarm rates ($893$ and $982$ false positives), making them suitable for high-sensitivity triage rather than automated blocking.
 
-### 6.1 Logistic Regression (Completed)
-- **Model:** Baseline linear classifier `LogisticRegression` (`sklearn.linear_model`, `class_weight='balanced'`, `random_state=42`).
-- **Data Configuration:** Trained on `X_train_processed` ($80,000$ samples, $47$ features) and evaluated on `X_test_processed` ($20,000$ samples) without data leakage or artificial resampling.
-- **Handling Imbalance:** Inversely weighted classes via `class_weight='balanced'` to heavily penalize false negatives on the rare minority fraud class ($1.5\%$).
-- **Convergence & Predictions:** Successfully converged in 26 iterations; generated discrete class predictions and continuous predicted probabilities for downstream ROC-AUC and PR-AUC ranking.
+## Review 1 conclusions and limitations
 
----
+- Diamond market valuation is fundamentally non-linear; tree-based ensembles (Random Forest, Gradient Boosting) outperform baseline linear formulations by over 7 percentage points in $R^2$ and reduce MAE by nearly two-thirds.
+- 3D physical volume ($\text{mm}^3$) accounts for over $62\%$ of predictive power in diamond appraisal, confirming that physical mass and spatial dimensions dictate baseline pricing, while color, clarity, and cut act as secondary value adjustments.
+- In financial fraud detection, overall accuracy is statistically misleading in severe class imbalance ($1.50\%$ positive class); model selection must be guided by operational cost trade-offs between direct financial losses from undetected frauds (Recall) versus customer friction from false positives (Precision).
+- Support Vector Machine provides the most balanced enterprise profile ($65.0\%$ Recall, $64.6\%$ Precision, $0.9917$ ROC-AUC), whereas Logistic Regression serves as an optimal high-recall safety filter.
+- Models reflect statistical associations from historical data and should serve as decision-support soft sensors rather than autonomous arbiters.
 
-### 6.2 K-Nearest Neighbors (KNN) (Completed)
-- **Model:** Instance-based `KNeighborsClassifier` (`sklearn.neighbors`, $k=5$, Euclidean distance metric, `n_jobs=-1`).
-- **Data Configuration:** Evaluated on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
-- **Hyperparameter Analysis ($k$ Tuning):**
-  - Evaluated candidate neighborhood values $k \in \{3, 5, 7, 9, 11\}$:
-    - $k=3$: Accuracy = `0.9870`
-    - $k=5$: Accuracy = `0.9870` (highest accuracy: `0.987050`)
-    - $k=7$: Accuracy = `0.9870`
-    - $k=9$: Accuracy = `0.9866`
-    - $k=11$: Accuracy = `0.9867`
-  - Selected optimal $k=5$ as the final model, balancing local precision against oversmoothing.
-- **Distance Metric Rationale:** Euclidean distance was selected to measure straight-line geometric proximity across the standardized continuous predictors and one-hot binary features.
-- **Scaling Significance:** StandardScaler prevents high-dollar transaction amounts from dominating smaller-scale customer risk scores and velocity features.
+## Responsible-use statement
 
----
+The fraud detection models developed in this study are intended exclusively as decision-support systems for transaction triage and risk prioritization, not for automated, unreviewed account blocking or financial denial. High-risk predictions should prompt stepped-up authentication (e.g., multi-factor verification) or human-analyst review. Decision thresholds must be continuously calibrated to minimize disparate impact across consumer segments and commercial merchant categories.
 
-### 6.3 Gaussian Naive Bayes (Completed)
-- **Model:** Probabilistic `GaussianNB` (`sklearn.naive_bayes`).
-- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
-- **Conditional Independence Assumption:** Assumes features are conditionally independent given the class ($P(X|y) = \prod P(x_i|y)$). Noted that while real transaction features share natural correlations (e.g. velocity windows and transaction amounts), the algorithm remains highly effective and delivers fast probabilistic baselines.
-- **Evaluation Performance:** Achieved test accuracy of **`0.9500`** ($95.00\%$) and captured over $93\%$ of true fraud cases ($281$ out of $300$) without artificial resampling or class re-weighting.
+## AI-assistance disclosure
 
----
-
-### 6.4 Decision Tree Classifier (Completed)
-- **Model:** Non-parametric `DecisionTreeClassifier` (`sklearn.tree`, `class_weight='balanced'`, `random_state=42`).
-- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
-- **Hyperparameter Analysis (`max_depth` Tuning):**
-  - Evaluated candidate maximum tree depths:
-    - `max_depth = 3`: Accuracy = `0.9112`
-    - `max_depth = 5`: Accuracy = `0.9438`
-    - `max_depth = 7`: Accuracy = `0.9547`
-    - `max_depth = 10`: Accuracy = **`0.9689`** (Highest accuracy)
-  - Selected optimal `max_depth = 10` for the final model.
-- **Tree Visualization & Interpretability:** Rendered the top 2 decision levels using `plot_tree()` with readable feature names. The hierarchy confirms that `customer_risk_score` and `previous_chargebacks` form the primary root-level split conditions.
-- **Pruning & Complexity Rationale:** Constraining `max_depth` prevents the tree from creating overly specific leaf partitions that memorize training noise.
-
----
-
-### 6.5 Support Vector Machine (SVC) (Completed)
-- **Model:** Kernelized Support Vector Classifier `SVC` (`sklearn.svm`, `class_weight='balanced'`, `random_state=42`).
-- **Data Configuration:** Evaluated directly on `X_train_processed` ($80,000$ samples) and `X_test_processed` ($20,000$ samples, $47$ features).
-- **Hyperparameter Analysis ($C$ and Kernel Tuning):**
-  - Evaluated parameter grid across regularization $C \in \{0.1, 1, 10\}$ and kernels (`linear`, `rbf`):
-    - $C=0.1, \text{linear}$: Accuracy = `0.9498`
-    - $C=0.1, \text{rbf}$: Accuracy = `0.9623`
-    - $C=1.0, \text{linear}$: Accuracy = `0.9503`
-    - $C=1.0, \text{rbf}$: Accuracy = `0.9836`
-    - $C=10.0, \text{linear}$: Accuracy = `0.9504`
-    - $C=10.0, \text{rbf}$: Accuracy = **`0.9894`** (Highest accuracy)
-  - Selected optimal combination: **$C = 10, \text{kernel} = \text{'rbf'}$** achieving `98.94%` test accuracy.
-- **Scaling Sensitivity:** Support Vector Classifiers depend strictly on geometric margins and Euclidean distances; pre-scaling continuous features to mean 0 and unit variance guarantees that high-magnitude features do not distort the decision boundary.
-
----
-
-## Milestone 7: Classification Model Evaluation (Completed)
-- **Evaluation Strategy:** Evaluated all 5 Part-A classification models on the identical 20,000 holdout test transactions ($98.5\%$ legitimate vs. $1.5\%$ fraud) using their existing test predictions without retraining, resampling, or hyperparameter tuning.
-- **Mandatory Metrics Evaluated:** Accuracy, Precision, Recall, Weighted F1-score, ROC-AUC, and Confusion Matrix with explicit `Not Fraud` / `Fraud` labels.
-- **Consolidated Preliminary Comparison Table:**
-
-| Model | Accuracy | Precision | Recall | Weighted F1 | ROC-AUC |
-|:---|---:|---:|---:|---:|---:|
-| **Logistic Regression** | `0.9550` | `0.2477` | **`0.9800`** | `0.9679` | `0.9916` |
-| **K-Nearest Neighbors** | `0.9870` | **`0.7356`** | `0.2133` | `0.9835` | `0.8704` |
-| **Gaussian Naive Bayes** | `0.9499` | `0.2225` | `0.9367` | `0.9647` | `0.9781` |
-| **Decision Tree** | `0.9689` | `0.3059` | `0.8433` | `0.9760` | `0.9150` |
-| **Support Vector Machine** | **`0.9894`** | `0.6457` | `0.6500` | **`0.9894`** | **`0.9917`** |
-
-- **Key Analytical Observations & Trade-offs:**
-  - **Highest Accuracy & Weighted F1:** Support Vector Machine (SVC) leads with **`98.94%` Accuracy** and **`0.9894` Weighted F1**, followed closely by KNN (`98.70%` Accuracy).
-  - **Highest ROC-AUC:** Support Vector Machine (SVC) achieves **`0.9917`**, followed closely by Logistic Regression (**`0.9916`**).
-  - **Precision / Recall Sensitivity Trade-offs:**
-    - **Logistic Regression** and **Gaussian Naive Bayes** prioritize recall (**`0.9800`** and **`0.9367`**), detecting 294 and 281 out of 300 fraud transactions, but yield higher false positive alarms (893 and 982 false alarms).
-    - **K-Nearest Neighbors** prioritizes precision (**`0.7356`**, only 23 false alarms), but misses 236 out of 300 frauds (Recall = **`0.2133`**).
-    - **Decision Tree** offers a balanced intermediate trade-off (Recall = **`0.8433`**, Precision = **`0.3059`**).
-    - **Support Vector Machine (SVC)** demonstrates the strongest balanced performance (Precision = **`0.6457`**, Recall = **`0.6500`**, 195 frauds detected, 107 false alarms).
-  - **Imbalanced Domain Caution:** In a severe 1.5% fraud distribution, a trivial majority-class baseline would attain 98.50% accuracy with 0 frauds caught; therefore, model selection must reflect business tolerance for financial fraud losses (Recall) versus customer friction from false denials (Precision), rather than accuracy alone.
-
----
-
-## Repository Structure
-- `notebooks/`:
-  - `regression.ipynb`: Diamond price prediction regression track (Milestones 1–9: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 10 Regression Models, Comparative Evaluation, Hyperparameter Tuning & Model Visualisations).
-  - `classification.ipynb`: Credit card transaction fraud detection track (Milestones 1–7: Loading & Audit, EDA, Cleaning, Feature Engineering, Preprocessing, 5 Classification Algorithms & Model Evaluation).
-- `datasets/`:
-  - `diamonds.csv`: Diamond price regression dataset ($53,940 \times 10$).
-  - `fraud_detection.parquet`: Fraud detection classification dataset ($100,000 \times 21$).
-- `AGENTS.md`: Repository workflow guidelines.
-- `README.md`: Project documentation and milestone tracking.
-
-
-
-
-
-
-
-
-
+AI tools were used for assistance during the development of this project, mainly for coding, documentation, and general guidance.
+They were also used to help with understanding concepts and structuring parts of the implementation.
+The work was reviewed, tested, and modified by our team according to the project requirements.
