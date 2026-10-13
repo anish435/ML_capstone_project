@@ -128,7 +128,7 @@ All models were evaluated on the identical held-out test partition ($10,755$ sam
 
 | Model | Test R2 | RMSE ($) | MAE ($) | Rank |
 |---|---:|---:|---:|:---:|
-| **Random Forest Regressor** | **0.9810** | **557.43** | **270.00** | **1** |
+| **Random Forest Regressor** | **0.9811** | **556.06** | **269.34** | **1** |
 | **Gradient Boosting Regressor** | **0.9755** | **632.82** | **349.89** | **2** |
 | **K-Nearest Neighbors Regressor** ($k=5$) | 0.9707 | 692.50 | 368.71 | 3 |
 | **Decision Tree Regressor** | 0.9661 | 745.08 | 360.01 | 4 |
