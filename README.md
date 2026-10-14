@@ -151,20 +151,22 @@ All models were evaluated on the identical held-out test partition ($10,755$ sam
 
 ---
 
-### Classification Part A comparison (5 algorithms)
+### Classification comparison (6 algorithms)
 
 All models were evaluated on the identical held-out test partition ($20,000$ transactions, $47$ preprocessed features):
 
 | Rank | Model | Test Accuracy | Precision | Recall | Weighted F1 | ROC-AUC | Frauds Caught (out of 300) | False Alarms |
 |:---:|---|---:|---:|---:|---:|---:|:---:|:---:|
-| 1 | **Support Vector Machine** ($C=10$, RBF) | **0.9894** | 0.6457 | 0.6500 | **0.9894** | **0.9917** | 195 | **107** |
-| 2 | **K-Nearest Neighbors** ($k=5$) | 0.9870 | **0.7356** | 0.2133 | 0.9835 | 0.8704 | 64 | **23** |
-| 3 | **Decision Tree** (`max_depth`=10) | 0.9689 | 0.3059 | 0.8433 | 0.9760 | 0.9150 | 253 | 574 |
-| 4 | **Logistic Regression** (Balanced) | 0.9550 | 0.2477 | **0.9800** | 0.9679 | 0.9916 | **294** | 893 |
-| 5 | **Gaussian Naive Bayes** | 0.9499 | 0.2225 | 0.9367 | 0.9647 | 0.9781 | 281 | 982 |
+| 1 | **Random Forest Classifier** (`n_estimators`=200) | **0.9906** | 0.7222 | 0.6067 | **0.9902** | **0.9943** | 182 | **70** |
+| 2 | **Support Vector Machine** ($C=10$, RBF) | 0.9894 | 0.6457 | 0.6500 | 0.9894 | 0.9917 | 195 | 107 |
+| 3 | **K-Nearest Neighbors** ($k=5$) | 0.9870 | **0.7356** | 0.2133 | 0.9835 | 0.8704 | 64 | **23** |
+| 4 | **Decision Tree** (`max_depth`=10) | 0.9689 | 0.3059 | 0.8433 | 0.9760 | 0.9150 | 253 | 574 |
+| 5 | **Logistic Regression** (Balanced) | 0.9550 | 0.2477 | **0.9800** | 0.9679 | 0.9916 | **294** | 893 |
+| 6 | **Gaussian Naive Bayes** | 0.9499 | 0.2225 | 0.9367 | 0.9647 | 0.9781 | 281 | 982 |
 
 #### Hyperparameter tuning & trade-off analysis
-- **Support Vector Machine (SVC):** Parameter search across $C \in \{0.1, 1, 10\}$ and kernels identified **$C=10, \text{kernel}='rbf'$** as optimal ($98.94\%$ test accuracy). Delivers the strongest enterprise trade-off: intercepts **$65.0\%$** of all frauds ($195/300$) with only **$107$** false alarms, while leading the benchmark across Accuracy (`0.9894`), Weighted F1 (`0.9894`), and ROC-AUC (`0.9917`).
+- **Random Forest Classifier:** Ensembling 200 decorrelated trees via bagging and random feature subspaces achieves the highest test accuracy (**`0.9906`**), Weighted F1 (**`0.9902`**), and ROC-AUC (**`0.9943`**). Reduces false alarms down to just **70** (Precision **`0.7222`**) while capturing **182** fraudulent transactions. Feature importance reveals `previous_chargebacks` ($34.7\%$) and `customer_risk_score` ($31.6\%$) form over $66\%$ of total decision weight, followed by velocity metrics and engineered `amount_ratio`.
+- **Support Vector Machine (SVC):** Parameter search across $C \in \{0.1, 1, 10\}$ and kernels identified **$C=10, \text{kernel}='rbf'$** as optimal ($98.94\%$ test accuracy). Delivers a strong enterprise trade-off: intercepts **$65.0\%$** of all frauds ($195/300$) with $107$ false alarms ($0.9917$ ROC-AUC).
 - **K-Nearest Neighbors (KNN):** Neighborhood tuning identified **$k=5$** as optimal ($98.705\%$ accuracy). Maximizes Precision (**`0.7356`**, only $23$ false alarms), but suffers from low Recall (**`0.2133`**), missing $236$ out of $300$ fraudulent transactions due to neighborhood dilution by the dominant majority class.
 - **Decision Tree Classifier:** Depth optimization identified **`max_depth=10`** as optimal ($96.89\%$ test accuracy). Top split visualization confirms `customer_risk_score` and `previous_chargebacks` form the root decision boundaries, detecting **$253$** fraud cases (Recall: `0.8433`).
 - **Logistic Regression & Naive Bayes:** Inversely weighted Logistic Regression and Gaussian Naive Bayes maximize Recall (**`0.9800`** and **`0.9367`**), detecting $294$ and $281$ frauds, but generate high false alarm rates ($893$ and $982$ false positives), making them suitable for high-sensitivity triage rather than automated blocking.
