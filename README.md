@@ -151,21 +151,26 @@ All models were evaluated on the identical held-out test partition ($10,755$ sam
 
 ---
 
-### Classification comparison (6 algorithms)
+### Classification comparison (10 Capstone Algorithms)
 
 All models were evaluated on the identical held-out test partition ($20,000$ transactions, $47$ preprocessed features):
 
-| Rank | Model | Test Accuracy | Precision | Recall | Weighted F1 | ROC-AUC | Frauds Caught (out of 300) | False Alarms |
-|:---:|---|---:|---:|---:|---:|---:|:---:|:---:|
-| 1 | **Random Forest Classifier** (`n_estimators`=200) | **0.9906** | 0.7222 | 0.6067 | **0.9902** | **0.9943** | 182 | **70** |
-| 2 | **Support Vector Machine** ($C=10$, RBF) | 0.9894 | 0.6457 | 0.6500 | 0.9894 | 0.9917 | 195 | 107 |
-| 3 | **K-Nearest Neighbors** ($k=5$) | 0.9870 | **0.7356** | 0.2133 | 0.9835 | 0.8704 | 64 | **23** |
-| 4 | **Decision Tree** (`max_depth`=10) | 0.9689 | 0.3059 | 0.8433 | 0.9760 | 0.9150 | 253 | 574 |
-| 5 | **Logistic Regression** (Balanced) | 0.9550 | 0.2477 | **0.9800** | 0.9679 | 0.9916 | **294** | 893 |
-| 6 | **Gaussian Naive Bayes** | 0.9499 | 0.2225 | 0.9367 | 0.9647 | 0.9781 | 281 | 982 |
+| Alg # | Model | Test Accuracy | Precision | Recall | Weighted F1 | ROC-AUC | Frauds Caught (out of 300) | False Alarms | Status |
+|:---:|---|---:|---:|---:|---:|---:|:---:|:---:|:---:|
+| 7 | **AdaBoost Classifier** (`n_estimators`=150, `lr`=1.0) | **0.9931** | **0.8498** | 0.6600 | **0.9927** | **0.9971** | 198 | **35** | Completed (Review 2) |
+| 6 | **Random Forest Classifier** (`n_estimators`=200) | 0.9906 | 0.7222 | 0.6067 | 0.9902 | 0.9943 | 182 | 70 | Completed (Review 2) |
+| 5 | **Support Vector Machine** ($C=10$, RBF) | 0.9894 | 0.6457 | 0.6500 | 0.9894 | 0.9917 | 195 | 107 | Completed (Review 1) |
+| 2 | **K-Nearest Neighbors** ($k=5$) | 0.9870 | 0.7356 | 0.2133 | 0.9835 | 0.8704 | 64 | 23 | Completed (Review 1) |
+| 4 | **Decision Tree** (`max_depth`=10) | 0.9689 | 0.3059 | 0.8433 | 0.9760 | 0.9150 | 253 | 574 | Completed (Review 1) |
+| 1 | **Logistic Regression** (Balanced) | 0.9550 | 0.2477 | **0.9800** | 0.9679 | 0.9916 | **294** | 893 | Completed (Review 1) |
+| 3 | **Gaussian Naive Bayes** | 0.9499 | 0.2225 | 0.9367 | 0.9647 | 0.9781 | 281 | 982 | Completed (Review 1) |
+| 8 | **Gradient Boosting Classifier** | - | - | - | - | - | - | - | Pending (Review 2) |
+| 9 | **Bagging Classifier** | - | - | - | - | - | - | - | Pending (Review 2) |
+| 10 | **MLP Classifier (Neural Network)** | - | - | - | - | - | - | - | Pending (Review 2) |
 
 #### Hyperparameter tuning & trade-off analysis
-- **Random Forest Classifier:** Ensembling 200 decorrelated trees via bagging and random feature subspaces achieves the highest test accuracy (**`0.9906`**), Weighted F1 (**`0.9902`**), and ROC-AUC (**`0.9943`**). Reduces false alarms down to just **70** (Precision **`0.7222`**) while capturing **182** fraudulent transactions. Feature importance reveals `previous_chargebacks` ($34.7\%$) and `customer_risk_score` ($31.6\%$) form over $66\%$ of total decision weight, followed by velocity metrics and engineered `amount_ratio`.
+- **AdaBoost Classifier:** Sequential adaptive boosting of decision stumps tuned via 3-fold training cross-validation (`n_estimators=150, learning_rate=1.0`) attains the highest overall test accuracy (**`0.9931`** / **99.31%**), highest Precision among ensembles (**`0.8498`**), highest Weighted F1 (**`0.9927`**), and highest ROC-AUC (**`0.9971`**). By adaptively reweighting misclassified transactions at each boosting round, AdaBoost reduces false alarms to just **35** (a 50% reduction compared to Random Forest) while intercepting **198** of 300 fraudulent transactions (Recall: **`0.6600`**, a $+25$ fraud capture improvement over baseline AdaBoost).
+- **Random Forest Classifier:** Ensembling 200 decorrelated trees via bagging and random feature subspaces achieves strong test accuracy (**`0.9906`**), Weighted F1 (**`0.9902`**), and ROC-AUC (**`0.9943`**). Reduces false alarms down to **70** (Precision **`0.7222`**) while capturing **182** fraudulent transactions. Feature importance reveals `previous_chargebacks` ($34.7\%$) and `customer_risk_score` ($31.6\%$) form over $66\%$ of total decision weight, followed by velocity metrics and engineered `amount_ratio`.
 - **Support Vector Machine (SVC):** Parameter search across $C \in \{0.1, 1, 10\}$ and kernels identified **$C=10, \text{kernel}='rbf'$** as optimal ($98.94\%$ test accuracy). Delivers a strong enterprise trade-off: intercepts **$65.0\%$** of all frauds ($195/300$) with $107$ false alarms ($0.9917$ ROC-AUC).
 - **K-Nearest Neighbors (KNN):** Neighborhood tuning identified **$k=5$** as optimal ($98.705\%$ accuracy). Maximizes Precision (**`0.7356`**, only $23$ false alarms), but suffers from low Recall (**`0.2133`**), missing $236$ out of $300$ fraudulent transactions due to neighborhood dilution by the dominant majority class.
 - **Decision Tree Classifier:** Depth optimization identified **`max_depth=10`** as optimal ($96.89\%$ test accuracy). Top split visualization confirms `customer_risk_score` and `previous_chargebacks` form the root decision boundaries, detecting **$253$** fraud cases (Recall: `0.8433`).
