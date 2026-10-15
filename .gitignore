@@ -10,3 +10,7 @@ __pycache__/
 # System and IDE files
 .DS_Store
 Thumbs.db
+scratch/
+
+# Reference notebooks
+clustering_ref.ipynb
