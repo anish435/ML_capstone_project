@@ -42,6 +42,15 @@ Source: Amazon Product Catalog Benchmark. Dataset file: [`datasets/amzon_sample_
 ## Repository Structure
 
 ```text
+app/
+  app.py                    Streamlit shell and horizontal navigation
+  core.py                   Notebook-matched data, registry, training and cache
+  theme.py                  Palette, Plotly template and CSS
+  pages_regression.py       Regression lab, comparison and diagnostics
+  pages_classification.py   Classification lab, comparison and diagnostics
+  pages_clustering.py       Clustering lab, comparison and diagnostics
+  build_models.py           Optional pre-training command
+.streamlit/config.toml      Light theme configuration
 datasets/
   diamonds.csv             Raw diamond regression dataset (53,940 records x 10 features)
   fraud_detection.parquet  Raw transaction fraud classification dataset (100,000 records x 21 features)
@@ -53,6 +62,17 @@ notebooks/
 README.md                  Project overview, problem formulations, results, and setup instructions
 requirements.txt           Pinned Python dependencies
 ```
+
+## Run the Streamlit dashboard
+
+Install the project dependencies, then launch the dashboard from the repository root:
+
+```bash
+pip install -r requirements.txt
+streamlit run app/app.py
+```
+
+The first visit to each track trains its implemented estimators and stores fitted artifacts under `.cache/dashboard/`. To pre-train all tracks before opening the app, run `python app/build_models.py`. The cache is ignored by Git. The dashboard uses the notebook cleaning and split seeds (42); models shown as pending are not assigned invented scores. The fraud notebook includes computationally intensive large-data estimators; K-Nearest Neighbors and the benchmarked Random Forest stay available, while Bagging and SVM remain pending to keep first-load time practical.
 
 ---
 

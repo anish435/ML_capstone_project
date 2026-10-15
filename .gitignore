@@ -12,5 +12,12 @@ __pycache__/
 Thumbs.db
 scratch/
 
+# Model pickle files (regenerated via python train_models.py)
+*.pkl
+
+# Streamlit dashboard fitted model cache
+.cache/dashboard/
+
 # Reference notebooks
 clustering_ref.ipynb
+

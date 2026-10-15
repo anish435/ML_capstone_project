@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Capstone · 23CSE301 · Amrita Vishwa Vidyapeetham</title>
+  <meta name="description" content="ML Capstone project featuring Regression (Diamond Price Prediction), Classification (Fraud Detection), and Clustering (Amazon Product Segmentation).">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- APP SHELL -->
+  <div class="app-shell">
+
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">ML Capstone</div>
+          <div class="brand-sub">23CSE301</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" role="navigation">
+        <div class="nav-section-label">ML Tracks</div>
+
+        <button class="nav-item" id="nav-regression" data-track="regression" role="tab" aria-selected="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Regression
+          <span class="nav-tag">Diamonds</span>
+        </button>
+
+        <button class="nav-item" id="nav-classification" data-track="classification" role="tab" aria-selected="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          Classification
+          <span class="nav-tag">Fraud</span>
+        </button>
+
+        <button class="nav-item active" id="nav-clustering" data-track="clustering" role="tab" aria-selected="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          Clustering
+          <span class="nav-tag">Amazon</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="health-indicator" id="health-indicator">
+          <span class="health-dot" id="health-dot"></span>
+          <span id="health-text">Checking...</span>
+        </div>
+        <div class="footer-meta">Amrita VV · CB.SC.U4CSE24125</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-area" id="main-area">
+
+      <!-- ================================================== -->
+      <!-- TRACK: REGRESSION                                   -->
+      <!-- ================================================== -->
+      <div class="track-pane" id="track-regression" aria-hidden="true">
+        <div class="track-header">
+          <div>
+            <h1 class="track-title">Diamond Price Regression</h1>
+            <p class="track-desc">Predict diamond prices using physical and quality features. Trained on 53,940 diamonds with R² up to 0.98.</p>
+          </div>
+        </div>
+
+        <!-- Model not ready banner -->
+        <div class="not-ready-banner" id="reg-not-ready" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Regression models not loaded. Run <code>python train_models.py</code> in the gui directory first.</span>
+        </div>
+
+        <!-- Sub-tabs -->
+        <div class="track-tabs">
+          <button class="track-tab active" data-target="reg-predict">Predict Price</button>
+          <button class="track-tab" data-target="reg-models">Model Comparison</button>
+          <button class="track-tab" data-target="reg-charts">Visualisations</button>
+        </div>
+
+        <!-- SUB-PANEL: PREDICT -->
+        <div class="sub-panel active" id="reg-predict">
+          <div class="two-col-layout">
+
+            <div class="card">
+              <div class="card-hdr">
+                <h2 class="card-title">Diamond Attributes</h2>
+                <p class="card-desc">Enter the physical measurements and quality grades of the diamond.</p>
+              </div>
+
+              <div class="model-select-row">
+                <label for="reg-model-select" class="field-label">Model</label>
+                <select id="reg-model-select" class="form-select"></select>
+              </div>
+
+              <form id="reg-form">
+                <div class="form-grid two-col">
+                  <div class="form-group">
+                    <label for="reg-carat" class="field-label">Carat Weight <span class="req">*</span></label>
+                    <input type="number" id="reg-carat" step="0.01" min="0.1" max="6" value="0.9" class="form-input" required>
+                    <span class="field-hint">0.1 – 6.0 carats</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-depth" class="field-label">Depth % <span class="req">*</span></label>
+                    <input type="number" id="reg-depth" step="0.1" min="1" max="100" value="62.1" class="form-input" required>
+                    <span class="field-hint">Total depth / diameter ×100</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-table" class="field-label">Table % <span class="req">*</span></label>
+                    <input type="number" id="reg-table" step="0.1" min="1" max="100" value="58" class="form-input" required>
+                    <span class="field-hint">Width of top facet / diameter</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-x" class="field-label">Length x (mm) <span class="req">*</span></label>
+                    <input type="number" id="reg-x" step="0.01" min="0.1" max="25" value="6.11" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-y" class="field-label">Width y (mm) <span class="req">*</span></label>
+                    <input type="number" id="reg-y" step="0.01" min="0.1" max="25" value="6.09" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-z" class="field-label">Height z (mm) <span class="req">*</span></label>
+                    <input type="number" id="reg-z" step="0.01" min="0.1" max="25" value="3.79" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-cut" class="field-label">Cut Quality <span class="req">*</span></label>
+                    <select id="reg-cut" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="reg-color" class="field-label">Color Grade <span class="req">*</span></label>
+                    <select id="reg-color" class="form-select"></select>
+                  </div>
+                  <div class="form-group full-width">
+                    <label for="reg-clarity" class="field-label">Clarity Grade <span class="req">*</span></label>
+                    <select id="reg-clarity" class="form-select"></select>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" id="reg-submit-btn" class="btn btn-primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="5 3 19 12 5 21 5 3"/></svg>
+                    Predict Price
+                  </button>
+                  <button type="button" id="reg-reset-btn" class="btn btn-ghost">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Prediction Result -->
+            <div class="card" id="reg-result-card">
+              <div class="card-hdr">
+                <h2 class="card-title">Prediction Result</h2>
+                <span class="status-pill" id="reg-status-pill">Awaiting input</span>
+              </div>
+
+              <div id="reg-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <span>Running inference…</span>
+              </div>
+
+              <div id="reg-result-content">
+                <div class="result-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 8v4l3 3"/></svg>
+                  <p>Enter diamond attributes and click <strong>Predict Price</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: MODEL COMPARISON -->
+        <div class="sub-panel" id="reg-models">
+          <div class="card">
+            <div class="card-hdr">
+              <h2 class="card-title">Model Comparison</h2>
+              <p class="card-desc">All models trained on 80% of 53,920 clean diamonds and evaluated on the held-out 20% test set.</p>
+            </div>
+            <div id="reg-model-table-wrap">
+              <div class="loading-state"><div class="spinner"></div><span>Loading results…</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: CHARTS -->
+        <div class="sub-panel" id="reg-charts">
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Actual vs. Predicted Price</h3>
+                <p class="card-desc">Random Forest — dots near the diagonal indicate accurate predictions.</p>
+              </div>
+              <div class="chart-wrap"><canvas id="reg-actual-pred-chart"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Residual Distribution</h3>
+                <p class="card-desc">Residuals (Actual − Predicted) should be centred near zero.</p>
+              </div>
+              <div class="chart-wrap"><canvas id="reg-residual-chart"></canvas></div>
+            </div>
+            <div class="card chart-card full-width-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Feature Importance (Random Forest)</h3>
+                <p class="card-desc">Mean Decrease in Impurity across 150 trees. Volume, y-dimension and carat dominate price predictions.</p>
+              </div>
+              <div class="chart-wrap chart-tall"><canvas id="reg-feat-imp-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- END REGRESSION TRACK -->
+
+
+      <!-- ================================================== -->
+      <!-- TRACK: CLASSIFICATION                               -->
+      <!-- ================================================== -->
+      <div class="track-pane" id="track-classification" aria-hidden="true">
+        <div class="track-header">
+          <div>
+            <h1 class="track-title">Fraud Transaction Detection</h1>
+            <p class="track-desc">Binary classification on 100,000 financial transactions. Target: <code>risk_label</code> (0 = Legitimate, 1 = Fraud).</p>
+          </div>
+        </div>
+
+        <div class="not-ready-banner" id="clf-not-ready" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Classification models not loaded. Run <code>python train_models.py</code> in the gui directory first.</span>
+        </div>
+
+        <div class="track-tabs">
+          <button class="track-tab active" data-target="clf-predict">Predict Transaction</button>
+          <button class="track-tab" data-target="clf-models">Model Comparison</button>
+          <button class="track-tab" data-target="clf-charts">Visualisations</button>
+        </div>
+
+        <!-- SUB-PANEL: PREDICT -->
+        <div class="sub-panel active" id="clf-predict">
+          <div class="two-col-layout">
+            <div class="card">
+              <div class="card-hdr">
+                <h2 class="card-title">Transaction Features</h2>
+                <p class="card-desc">Enter transaction and customer attributes. <code>amount_ratio</code> is computed automatically from amount and 30-day average.</p>
+              </div>
+
+              <div class="model-select-row">
+                <label for="clf-model-select" class="field-label">Classifier</label>
+                <select id="clf-model-select" class="form-select"></select>
+              </div>
+
+              <form id="clf-form">
+                <div class="form-grid two-col">
+                  <div class="form-group">
+                    <label for="clf-transaction_amount" class="field-label">Transaction Amount ($) <span class="req">*</span></label>
+                    <input type="number" id="clf-transaction_amount" step="0.01" min="0.01" value="250.00" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-avg_transaction_amount_30d_customer" class="field-label">Avg. Txn Amount 30d ($) <span class="req">*</span></label>
+                    <input type="number" id="clf-avg_transaction_amount_30d_customer" step="0.01" min="0" value="180.00" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-customer_risk_score" class="field-label">Customer Risk Score (0–100) <span class="req">*</span></label>
+                    <input type="number" id="clf-customer_risk_score" step="0.1" min="0" max="100" value="25" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-account_age_days" class="field-label">Account Age (Days) <span class="req">*</span></label>
+                    <input type="number" id="clf-account_age_days" step="1" min="0" value="800" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-previous_chargebacks" class="field-label">Previous Chargebacks <span class="req">*</span></label>
+                    <input type="number" id="clf-previous_chargebacks" step="1" min="0" value="0" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-customer_total_transactions_30d" class="field-label">Txns in Last 30d <span class="req">*</span></label>
+                    <input type="number" id="clf-customer_total_transactions_30d" step="1" min="0" value="12" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_velocity_1h" class="field-label">Transactions Last 1h <span class="req">*</span></label>
+                    <input type="number" id="clf-transaction_velocity_1h" step="1" min="0" value="1" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_velocity_24h" class="field-label">Transactions Last 24h <span class="req">*</span></label>
+                    <input type="number" id="clf-transaction_velocity_24h" step="1" min="0" value="3" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_hour" class="field-label">Transaction Hour (0–23) <span class="req">*</span></label>
+                    <input type="number" id="clf-transaction_hour" step="1" min="0" max="23" value="14" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_day_of_week" class="field-label">Day of Week (0=Mon) <span class="req">*</span></label>
+                    <input type="number" id="clf-transaction_day_of_week" step="1" min="0" max="6" value="2" class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-merchant_category" class="field-label">Merchant Category <span class="req">*</span></label>
+                    <select id="clf-merchant_category" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-device_type" class="field-label">Device Type <span class="req">*</span></label>
+                    <select id="clf-device_type" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_country" class="field-label">Country <span class="req">*</span></label>
+                    <select id="clf-transaction_country" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-transaction_type" class="field-label">Transaction Type <span class="req">*</span></label>
+                    <select id="clf-transaction_type" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="clf-geo_location_region" class="field-label">Region <span class="req">*</span></label>
+                    <select id="clf-geo_location_region" class="form-select"></select>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" id="clf-submit-btn" class="btn btn-primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Classify Transaction
+                  </button>
+                  <button type="button" id="clf-reset-btn" class="btn btn-ghost">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Classification Result -->
+            <div class="card" id="clf-result-card">
+              <div class="card-hdr">
+                <h2 class="card-title">Classification Result</h2>
+                <span class="status-pill" id="clf-status-pill">Awaiting input</span>
+              </div>
+              <div id="clf-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <span>Running inference…</span>
+              </div>
+              <div id="clf-result-content">
+                <div class="result-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <p>Enter transaction details and click <strong>Classify Transaction</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: MODEL COMPARISON -->
+        <div class="sub-panel" id="clf-models">
+          <div class="card">
+            <div class="card-hdr">
+              <h2 class="card-title">Classifier Comparison</h2>
+              <p class="card-desc">10 classifiers evaluated on 20,000 held-out transactions. Binary target: fraud (1.5%) vs. legitimate (98.5%).</p>
+            </div>
+            <div id="clf-model-table-wrap">
+              <div class="loading-state"><div class="spinner"></div><span>Loading results…</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: CHARTS -->
+        <div class="sub-panel" id="clf-charts">
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Confusion Matrix</h3>
+                <p class="card-desc">True vs. predicted class for the selected model.</p>
+                <div class="chart-model-select-wrap">
+                  <select id="clf-chart-model-select" class="form-select form-select-sm"></select>
+                </div>
+              </div>
+              <div class="chart-wrap" id="clf-confusion-wrap" style="height: auto; min-height: 280px; display: flex; align-items: center; justify-content: center;"></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">ROC Curve</h3>
+                <p class="card-desc">Receiver Operating Characteristic — area under curve measures discrimination ability.</p>
+              </div>
+              <div class="chart-wrap"><canvas id="clf-roc-chart"></canvas></div>
+            </div>
+            <div class="card chart-card full-width-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Metric Comparison (All Models)</h3>
+                <p class="card-desc">Accuracy, Precision, Recall, F1, and ROC-AUC across all classifiers.</p>
+              </div>
+              <div class="chart-wrap chart-tall"><canvas id="clf-metrics-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- END CLASSIFICATION TRACK -->
+
+
+      <!-- ================================================== -->
+      <!-- TRACK: CLUSTERING                                   -->
+      <!-- ================================================== -->
+      <div class="track-pane active" id="track-clustering">
+        <div class="track-header">
+          <div>
+            <h1 class="track-title">Amazon Product Segmentation</h1>
+            <p class="track-desc">K-Means clustering (k=4) on 47,921 Amazon products using price, reviews, velocity, ratings, and discount signals.</p>
+          </div>
+        </div>
+
+        <div class="not-ready-banner" id="clust-not-ready" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Clustering model not loaded. Run <code>python train_models.py</code> in the gui directory first.</span>
+        </div>
+
+        <div class="track-tabs">
+          <button class="track-tab active" data-target="clust-classify">Classify Product</button>
+          <button class="track-tab" data-target="clust-analysis">Cluster Analysis</button>
+          <button class="track-tab" data-target="clust-pca">PCA &amp; Diagnostics</button>
+          <button class="track-tab" data-target="clust-catalog">Catalog Explorer</button>
+        </div>
+
+        <!-- SUB-PANEL: CLASSIFY PRODUCT -->
+        <div class="sub-panel active" id="clust-classify">
+          <div class="two-col-layout">
+            <div class="card">
+              <div class="card-hdr">
+                <h2 class="card-title">Product Attributes</h2>
+                <p class="card-desc">Enter product metrics to predict the K-Means cluster assignment using the trained model.</p>
+              </div>
+
+              <!-- Quick presets -->
+              <div class="presets-bar">
+                <span class="presets-label">Quick presets:</span>
+                <button type="button" class="preset-chip" data-preset="viral">⚡ Viral Product</button>
+                <button type="button" class="preset-chip" data-preset="discount">🏷️ Discount Item</button>
+                <button type="button" class="preset-chip" data-preset="standard">📦 Standard Product</button>
+                <button type="button" class="preset-chip" data-preset="unrated">✨ New Listing</button>
+              </div>
+
+              <form id="clust-form">
+                <div class="form-grid two-col">
+                  <div class="form-group">
+                    <label for="clust-price" class="field-label">Selling Price ($) <span class="req">*</span></label>
+                    <div class="input-prefix-wrap">
+                      <span class="input-prefix">$</span>
+                      <input type="number" id="clust-price" step="0.01" min="0.01" max="5000" value="19.99" class="form-input prefix-input" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="clust-listprice" class="field-label">List Price / MSRP ($)</label>
+                    <div class="input-prefix-wrap">
+                      <span class="input-prefix">$</span>
+                      <input type="number" id="clust-listprice" step="0.01" min="0" max="5000" value="29.99" class="form-input prefix-input">
+                    </div>
+                    <span class="field-hint">Enter 0 if no MSRP is available</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="clust-stars" class="field-label">Customer Rating (0–5)</label>
+                    <input type="number" id="clust-stars" step="0.1" min="0" max="5" value="4.5" class="form-input">
+                    <span class="field-hint">Enter 0 if no ratings exist</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="clust-reviews" class="field-label">Total Reviews</label>
+                    <input type="number" id="clust-reviews" step="1" min="0" value="640" class="form-input">
+                  </div>
+                  <div class="form-group full-width">
+                    <label for="clust-bought" class="field-label">Purchases in Last Month</label>
+                    <input type="number" id="clust-bought" step="1" min="0" value="150" class="form-input">
+                    <span class="field-hint">Estimated 30-day unit velocity</span>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" id="clust-submit-btn" class="btn btn-primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    Classify Product
+                  </button>
+                  <button type="button" id="clust-reset-btn" class="btn btn-ghost">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Clustering Result -->
+            <div class="card" id="clust-result-card">
+              <div class="card-hdr">
+                <h2 class="card-title">Cluster Assignment</h2>
+                <span class="status-pill" id="clust-status-pill">Awaiting input</span>
+              </div>
+              <div id="clust-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <span>Applying K-Means inference…</span>
+              </div>
+              <div id="clust-result-content">
+                <div class="result-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>
+                  <p>Enter product attributes and click <strong>Classify Product</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: CLUSTER ANALYSIS -->
+        <div class="sub-panel" id="clust-analysis">
+          <!-- Cluster KPIs -->
+          <div class="kpi-bar" id="clust-kpi-bar">
+            <div class="loading-state"><div class="spinner"></div></div>
+          </div>
+
+          <!-- Cluster profile cards -->
+          <div class="cluster-cards-grid" id="clust-profile-cards"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Cluster Size Distribution</h3>
+              </div>
+              <div class="chart-wrap"><canvas id="clust-size-chart"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Feature Profile by Cluster</h3>
+                <p class="card-desc">Median price, average stars, review count, and monthly velocity per cluster.</p>
+              </div>
+              <div class="chart-wrap"><canvas id="clust-profile-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: PCA & DIAGNOSTICS -->
+        <div class="sub-panel" id="clust-pca">
+          <div class="charts-grid">
+            <div class="card chart-card large-chart">
+              <div class="card-hdr">
+                <h3 class="card-title">PCA 2D Scatter Plot</h3>
+                <p class="card-desc">600 representative products projected onto the first two principal components. Hover for product details.</p>
+              </div>
+              <div class="chart-wrap pca-chart-wrap"><canvas id="clust-pca-chart"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-hdr">
+                <h3 class="card-title">Elbow Method</h3>
+                <p class="card-desc">Within-cluster sum of squares vs. k. Optimal k=4 selected at the elbow bend.</p>
+                <div class="chart-toggle-group">
+                  <button class="toggle-btn active" data-elbow="inertia">Inertia</button>
+                  <button class="toggle-btn" data-elbow="silhouette">Silhouette</button>
+                  <button class="toggle-btn" data-elbow="db">Davies–Bouldin</button>
+                </div>
+              </div>
+              <div class="chart-wrap"><canvas id="clust-elbow-chart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Diagnostics KPIs -->
+          <div class="card">
+            <div class="card-hdr"><h3 class="card-title">Clustering Quality Metrics</h3></div>
+            <div class="metrics-row" id="clust-metrics-row"></div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL: CATALOG EXPLORER -->
+        <div class="sub-panel" id="clust-catalog">
+          <div class="card">
+            <div class="catalog-filters-bar">
+              <div class="search-wrap">
+                <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="catalog-search" placeholder="Search product titles…" class="form-input search-input">
+              </div>
+              <div class="filter-row">
+                <div class="filter-group">
+                  <label class="field-label">Category</label>
+                  <select id="catalog-cat" class="form-select form-select-sm">
+                    <option value="All">All Categories</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label class="field-label">Cluster</label>
+                  <select id="catalog-cluster" class="form-select form-select-sm">
+                    <option value="All">All Clusters</option>
+                    <option value="0">0 · Standard Catalog</option>
+                    <option value="1">1 · High-Velocity</option>
+                    <option value="2">2 · Discount Driven</option>
+                    <option value="3">3 · Cold Start</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label class="field-label">Sort</label>
+                  <select id="catalog-sort" class="form-select form-select-sm">
+                    <option value="price_desc">Price: High → Low</option>
+                    <option value="price_asc">Price: Low → High</option>
+                    <option value="reviews_desc">Most Reviews</option>
+                    <option value="bought_desc">Top Velocity</option>
+                    <option value="stars_desc">Highest Rated</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="catalog-status-bar">
+              <span id="catalog-count">Loading…</span>
+              <span id="catalog-page-info">Page 1</span>
+            </div>
+
+            <div class="product-grid" id="product-grid"></div>
+
+            <div class="pagination-bar">
+              <button class="btn btn-ghost" id="btn-prev" disabled>← Prev</button>
+              <span id="pagination-indicator" class="page-indicator">1 / 1</span>
+              <button class="btn btn-ghost" id="btn-next">Next →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- END CLUSTERING TRACK -->
+
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <span>Amrita Vishwa Vidyapeetham · 23CSE301 Machine Learning Capstone 2026–27 · Team CB.SC.U4CSE24125</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
