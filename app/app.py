@@ -197,8 +197,15 @@ button[kind="primary"]:hover {
 # MODEL LOADING (cached)
 # ─────────────────────────────────────────
 
+def load_json_metadata(filename):
+    """Load JSON metadata file reliably with UTF-8 encoding from MODELS_DIR."""
+    target_path = os.path.join(MODELS_DIR, filename)
+    with open(target_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 @st.cache_resource(show_spinner="Loading ML model artifacts…")
-def load_models():
+def load_models(_cache_key="20261016_v3_multimodel_live"):
     result = {"reg": {}, "clf": {}, "clust": {}}
 
     # ── Regression ──
@@ -216,8 +223,7 @@ def load_models():
             "ElasticNet":                     joblib.load(os.path.join(MODELS_DIR, "reg_elasticnet.pkl")),
             "Support Vector Regressor (SVR)": joblib.load(os.path.join(MODELS_DIR, "reg_support_vector_regressor_svr.pkl")),
         }
-        with open(os.path.join(MODELS_DIR, "reg_data.json")) as f:
-            result["reg"]["data"] = json.load(f)
+        result["reg"]["data"] = load_json_metadata("reg_data.json")
         result["reg"]["ready"] = True
     except Exception as e:
         result["reg"]["ready"] = False
@@ -238,8 +244,7 @@ def load_models():
             "Bagging":                joblib.load(os.path.join(MODELS_DIR, "clf_bagging.pkl")),
             "MLP Neural Network":     joblib.load(os.path.join(MODELS_DIR, "clf_mlp_neural_network.pkl")),
         }
-        with open(os.path.join(MODELS_DIR, "clf_data.json")) as f:
-            result["clf"]["data"] = json.load(f)
+        result["clf"]["data"] = load_json_metadata("clf_data.json")
         result["clf"]["ready"] = True
     except Exception as e:
         result["clf"]["ready"] = False
@@ -425,7 +430,7 @@ if "Regression" in track:
         st.error(f"⚠️ Regression models not loaded: `{M['reg'].get('error','unknown')}`\n\nRun `python train_models.py` inside the `gui/` folder first.")
         st.stop()
 
-    reg_data = M["reg"]["data"]
+    reg_data = load_json_metadata("reg_data.json")
     cat_info  = reg_data["categorical_info"]
 
     tab_pred, tab_compare, tab_charts = st.tabs(["🎯 Predict Price", "📊 Model Comparison", "📉 Visualisations"])
@@ -566,10 +571,19 @@ if "Regression" in track:
         avp_all = reg_data.get("actual_vs_pred_by_model", {})
         avp = avp_all.get(reg_viz_model, reg_data["actual_vs_pred"])
 
-        rk1, rk2, rk3 = st.columns(3)
+        actual_arr = np.array(avp["actual"])
+        pred_arr = np.array(avp["predicted"])
+        resid_arr = np.array(avp["residuals"])
+        abs_err_arr = np.abs(resid_arr)
+
+        mean_err = float(np.mean(resid_arr))
+        std_err = float(np.std(resid_arr))
+
+        rk1, rk2, rk3, rk4 = st.columns(4)
         rk1.metric("R² Score", f"{m_reg_info['r2']:.4f}")
         rk2.metric("RMSE", f"${m_reg_info['rmse']:,.2f}")
         rk3.metric("MAE", f"${m_reg_info['mae']:,.2f}")
+        rk4.metric("Avg Bias", f"${mean_err:+.1f}", f"σ: ${std_err:,.0f}")
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
@@ -578,18 +592,26 @@ if "Regression" in track:
             fig_avp = go.Figure()
             fig_avp.add_trace(go.Scatter(
                 x=avp["actual"], y=avp["predicted"],
-                mode="markers", marker=dict(color="#3b82f6", opacity=0.45, size=5),
+                mode="markers",
+                marker=dict(
+                    color=abs_err_arr,
+                    colorscale="Viridis",
+                    size=5.5,
+                    opacity=0.8,
+                    showscale=True,
+                    colorbar=dict(title="Error ($)", len=0.75, thickness=12, x=1.02)
+                ),
                 name="Predictions",
-                hovertemplate="Actual: $%{x:,.0f}<br>Predicted: $%{y:,.0f}<extra></extra>",
+                hovertemplate="Actual: $%{x:,.0f}<br>Predicted: $%{y:,.0f}<br>Error: $%{marker.color:,.0f}<extra></extra>",
             ))
             max_val = max(max(avp["actual"]), max(avp["predicted"]))
             fig_avp.add_trace(go.Scatter(
                 x=[0, max_val], y=[0, max_val], mode="lines",
-                line=dict(color="#ef4444", dash="dash", width=1.5),
-                name="Predicted = Actual"
+                line=dict(color="#ef4444", dash="dash", width=1.8),
+                name="Ideal (y = x)"
             ))
             fig_avp.update_layout(
-                title=f"Actual vs. Predicted Price ({reg_viz_model})",
+                title=f"Actual vs. Predicted Price — {reg_viz_model}",
                 xaxis_title="Actual Price ($)", yaxis_title="Predicted Price ($)",
                 **get_layout()
             )
@@ -597,45 +619,73 @@ if "Regression" in track:
 
         with c2:
             fig_res = go.Figure(go.Histogram(
-                x=avp["residuals"], nbinsx=50, marker_color="#f59e0b", opacity=0.8,
+                x=avp["residuals"], nbinsx=45,
+                marker_color="#3b82f6", opacity=0.8,
                 hovertemplate="Residual: $%{x:,.0f}<br>Count: %{y}<extra></extra>",
             ))
-            fig_res.add_vline(x=0, line_color="#94a3b8", line_dash="dash", line_width=1.5)
+            fig_res.add_vline(x=0, line_color="#ef4444", line_dash="dash", line_width=1.5)
             fig_res.update_layout(
-                title=f"Residual Distribution ({reg_viz_model})",
+                title=f"Residual Distribution (Actual − Predicted) — {reg_viz_model}",
                 xaxis_title="Residual ($)", yaxis_title="Count",
                 **get_layout()
             )
             st.plotly_chart(fig_res, use_container_width=True)
 
-        # Feature importance / weights if available
-        fi_all = reg_data.get("feature_importances_by_model", {})
-        if reg_viz_model in fi_all:
-            fi_df = pd.DataFrame(fi_all[reg_viz_model][:10]).sort_values("importance")
-            fig_fi = go.Figure(go.Bar(
-                x=fi_df["importance"], y=fi_df["feature"], orientation="h",
-                marker_color="#3b82f6", opacity=0.85,
-                text=[f"{v:.3f}" for v in fi_df["importance"]], textposition="outside",
+        # Row 2: Diagnostic Heteroscedasticity + Model-Specific Feature/Tier Drivers
+        c3, c4 = st.columns(2)
+        with c3:
+            fig_rvp = go.Figure()
+            fig_rvp.add_trace(go.Scatter(
+                x=avp["predicted"], y=avp["residuals"],
+                mode="markers",
+                marker=dict(color="#f59e0b", opacity=0.7, size=5),
+                hovertemplate="Predicted: $%{x:,.0f}<br>Residual: $%{y:,.0f}<extra></extra>",
+                name="Residuals"
             ))
-            fig_fi.update_layout(
-                title=f"Feature Drivers — {reg_viz_model} (Top 10)",
-                xaxis_title="Importance / Coefficient Magnitude",
+            fig_rvp.add_hline(y=0, line_color="#ef4444", line_dash="dash", line_width=1.5)
+            fig_rvp.update_layout(
+                title=f"Residuals vs. Predicted Price — {reg_viz_model}",
+                xaxis_title="Predicted Price ($)", yaxis_title="Residual ($)",
                 **get_layout()
             )
-            st.plotly_chart(fig_fi, use_container_width=True)
-        elif "feature_importance" in reg_data:
-            fi_df = pd.DataFrame(reg_data["feature_importance"][:10]).sort_values("importance")
-            fig_fi = go.Figure(go.Bar(
-                x=fi_df["importance"], y=fi_df["feature"], orientation="h",
-                marker_color="#3b82f6", opacity=0.85,
-                text=[f"{v:.3f}" for v in fi_df["importance"]], textposition="outside",
-            ))
-            fig_fi.update_layout(
-                title="Global Feature Importance Benchmark (Top 10)",
-                xaxis_title="Mean Decrease in Impurity",
-                **get_layout()
-            )
-            st.plotly_chart(fig_fi, use_container_width=True)
+            st.plotly_chart(fig_rvp, use_container_width=True)
+
+        with c4:
+            fi_all = reg_data.get("feature_importances_by_model", {})
+            if reg_viz_model in fi_all:
+                fi_df = pd.DataFrame(fi_all[reg_viz_model][:10]).sort_values("importance")
+                fig_fi = go.Figure(go.Bar(
+                    x=fi_df["importance"], y=fi_df["feature"], orientation="h",
+                    marker_color="#10b981", opacity=0.85,
+                    text=[f"{v:.3f}" if v < 10 else f"{v:,.0f}" for v in fi_df["importance"]],
+                    textposition="outside",
+                ))
+                x_title = "Gini / Split Importance" if ("Forest" in reg_viz_model or "Tree" in reg_viz_model or "Boosting" in reg_viz_model) else "Coefficient Magnitude (|β|)"
+                fig_fi.update_layout(
+                    title=f"Feature Drivers — {reg_viz_model} (Top 10)",
+                    xaxis_title=x_title,
+                    **get_layout()
+                )
+                st.plotly_chart(fig_fi, use_container_width=True)
+            else:
+                tier_names = ["Under $2k", "$2k – $5k", "$5k – $10k", "Over $10k"]
+                t1 = float(np.mean(abs_err_arr[actual_arr < 2000])) if any(actual_arr < 2000) else 0.0
+                t2 = float(np.mean(abs_err_arr[(actual_arr >= 2000) & (actual_arr < 5000)])) if any((actual_arr >= 2000) & (actual_arr < 5000)) else 0.0
+                t3 = float(np.mean(abs_err_arr[(actual_arr >= 5000) & (actual_arr < 10000)])) if any((actual_arr >= 5000) & (actual_arr < 10000)) else 0.0
+                t4 = float(np.mean(abs_err_arr[actual_arr >= 10000])) if any(actual_arr >= 10000) else 0.0
+                tier_maes = [t1, t2, t3, t4]
+
+                fig_tier = go.Figure(go.Bar(
+                    x=tier_names, y=tier_maes,
+                    marker_color=["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+                    text=[f"${v:,.0f}" for v in tier_maes], textposition="outside",
+                ))
+                fig_tier.update_layout(
+                    title=f"Mean Error by Price Tier — {reg_viz_model}",
+                    yaxis_title="Average Dollar Error ($)",
+                    **get_layout()
+                )
+                st.plotly_chart(fig_tier, use_container_width=True)
 
 
 # ─────────────────────────────────────────
@@ -652,7 +702,7 @@ elif "Classification" in track:
         st.error(f"⚠️ Classification models not loaded: `{M['clf'].get('error','unknown')}`\n\nRun `python train_models.py` first.")
         st.stop()
 
-    clf_data  = M["clf"]["data"]
+    clf_data = load_json_metadata("clf_data.json")
     ds_info   = clf_data["dataset_info"]
     cat_opts  = clf_data["cat_options"]
     num_feats = clf_data["num_features"]
