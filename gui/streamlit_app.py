@@ -29,8 +29,11 @@ st.set_page_config(
 # PATHS
 # ─────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-MODELS_DIR  = os.path.join(BASE_DIR, "models")
-DATASETS_DIR = os.path.join(BASE_DIR, "..", "datasets")
+ROOT_DIR    = os.path.dirname(BASE_DIR) if os.path.basename(BASE_DIR) in ("app", "gui") else BASE_DIR
+
+MODELS_DIR  = os.path.join(ROOT_DIR, "models") if os.path.exists(os.path.join(ROOT_DIR, "models")) else os.path.join(BASE_DIR, "models")
+DATASETS_DIR = os.path.join(ROOT_DIR, "datasets") if os.path.exists(os.path.join(ROOT_DIR, "datasets")) else os.path.join(BASE_DIR, "..", "datasets")
+
 
 # ─────────────────────────────────────────
 # CUSTOM CSS

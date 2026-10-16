@@ -42,37 +42,41 @@ Source: Amazon Product Catalog Benchmark. Dataset file: [`datasets/amzon_sample_
 ## Repository Structure
 
 ```text
-app/
-  app.py                    Streamlit shell and horizontal navigation
-  core.py                   Notebook-matched data, registry, training and cache
-  theme.py                  Palette, Plotly template and CSS
-  pages_regression.py       Regression lab, comparison and diagnostics
-  pages_classification.py   Classification lab, comparison and diagnostics
-  pages_clustering.py       Clustering lab, comparison and diagnostics
-  build_models.py           Optional pre-training command
-.streamlit/config.toml      Light theme configuration
-datasets/
-  diamonds.csv             Raw diamond regression dataset (53,940 records x 10 features)
-  fraud_detection.parquet  Raw transaction fraud classification dataset (100,000 records x 21 features)
-  amzon_sample_pod_cat.csv Raw Amazon product clustering dataset (50,000 records x 13 columns)
+/                         (root)
+README.md                 Project overview, problem formulations, results, and setup instructions
+requirements.txt          Pinned Python dependencies with versions
+datasets/                 Raw datasets (diamonds.csv, fraud_detection.parquet, amzon_sample_pod_cat.csv)
 notebooks/
-  regression.ipynb         Review 1 regression track (10 algorithms, tuning, visualizations)
-  classification.ipynb     Review 1 & 2 classification track (10 algorithms, tuning, evaluation)
-  clustering.ipynb         Review 2 clustering track (K-Means, Agglomerative, PCA, t-SNE, profiling)
-README.md                  Project overview, problem formulations, results, and setup instructions
-requirements.txt           Pinned Python dependencies
+  regression.ipynb        Review 1 regression track (10 algorithms, tuning, visualizations)
+  classification.ipynb    Review 1 & 2 classification track (10 algorithms, tuning, evaluation)
+  clustering.ipynb        Review 2 clustering track (K-Means, Agglomerative, PCA, t-SNE, profiling)
+models/                   Saved model files (.pkl via joblib and benchmark .json files)
+app/                      GUI / deployment code (interactive multi-track Streamlit & Flask apps)
+  app.py                  Complete interactive Streamlit GUI dashboard
+  web_app.py              Full-stack Flask web application
+  train_models.py         Automated training and serialization pipeline
+  templates/ & static/    Glassmorphism UI frontend assets
+  run_app.bat             One-click Windows launcher
+run_app.bat               Root-level one-click launcher for the Streamlit GUI
 ```
 
-## Run the Streamlit dashboard
+## Run the GUI Dashboard
 
-Install the project dependencies, then launch the dashboard from the repository root:
+Install project dependencies, then launch the Streamlit dashboard from the repository root:
 
 ```bash
 pip install -r requirements.txt
 streamlit run app/app.py
 ```
 
-The first visit to each track trains its implemented estimators and stores fitted artifacts under `.cache/dashboard/`. To pre-train all tracks before opening the app, run `python app/build_models.py`. The cache is ignored by Git. The dashboard uses the notebook cleaning and split seeds (42); models shown as pending are not assigned invented scores. The fraud notebook includes computationally intensive large-data estimators; K-Nearest Neighbors and the benchmarked Random Forest stay available, while Bagging and SVM remain pending to keep first-load time practical.
+Or simply double-click **`run_app.bat`** in the repository root.
+
+All 10 models for Regression, 10 models for Classification, and K-Means for Clustering are pre-trained and serialized in `models/`. If you ever wish to re-train all models from scratch:
+
+```bash
+python app/train_models.py
+```
+
 
 ---
 

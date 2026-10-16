@@ -32,9 +32,12 @@ from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_har
 import joblib
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODELS_DIR = os.path.join(BASE_DIR, 'models')
-DATASETS_DIR = os.path.join(BASE_DIR, '..', 'datasets')
+ROOT_DIR = os.path.dirname(BASE_DIR) if os.path.basename(BASE_DIR) in ("app", "gui") else BASE_DIR
+
+MODELS_DIR = os.path.join(ROOT_DIR, 'models') if os.path.exists(os.path.join(ROOT_DIR, 'models')) else os.path.join(BASE_DIR, 'models')
+DATASETS_DIR = os.path.join(ROOT_DIR, 'datasets') if os.path.exists(os.path.join(ROOT_DIR, 'datasets')) else os.path.join(BASE_DIR, '..', 'datasets')
 os.makedirs(MODELS_DIR, exist_ok=True)
+
 SEED = 42
 
 print("=" * 60)

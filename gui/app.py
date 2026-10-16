@@ -11,8 +11,11 @@ import pandas as pd
 from flask import Flask, render_template, request, jsonify
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODELS_DIR = os.path.join(BASE_DIR, 'models')
-DATASETS_DIR = os.path.join(BASE_DIR, '..', 'datasets')
+ROOT_DIR = os.path.dirname(BASE_DIR) if os.path.basename(BASE_DIR) in ("app", "gui") else BASE_DIR
+
+MODELS_DIR = os.path.join(ROOT_DIR, 'models') if os.path.exists(os.path.join(ROOT_DIR, 'models')) else os.path.join(BASE_DIR, 'models')
+DATASETS_DIR = os.path.join(ROOT_DIR, 'datasets') if os.path.exists(os.path.join(ROOT_DIR, 'datasets')) else os.path.join(BASE_DIR, '..', 'datasets')
+
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
