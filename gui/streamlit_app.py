@@ -353,6 +353,12 @@ PLOTLY_LAYOUT = dict(
     yaxis=dict(gridcolor="#1e293b", color="#94a3b8"),
 )
 
+def get_layout(**kwargs):
+    """Safely combine PLOTLY_LAYOUT with overrides without duplicate kwarg errors."""
+    layout = dict(PLOTLY_LAYOUT)
+    layout.update(kwargs)
+    return layout
+
 CLUSTER_COLORS = {0: "#3b82f6", 1: "#ef4444", 2: "#10b981", 3: "#8b5cf6"}
 
 # ─────────────────────────────────────────
@@ -552,25 +558,41 @@ if "Regression" in track:
 
     # ── TAB 3: CHARTS ──
     with tab_charts:
-        avp = reg_data["actual_vs_pred"]
-        fi  = reg_data["feature_importance"]
+        reg_viz_model = st.selectbox(
+            "Select Regression Model for Diagnostic Visualisations",
+            list(reg_data["models"].keys()), key="reg_viz_model"
+        )
+        m_reg_info = reg_data["models"][reg_viz_model]
+        avp_all = reg_data.get("actual_vs_pred_by_model", {})
+        avp = avp_all.get(reg_viz_model, reg_data["actual_vs_pred"])
+
+        rk1, rk2, rk3 = st.columns(3)
+        rk1.metric("R² Score", f"{m_reg_info['r2']:.4f}")
+        rk2.metric("RMSE", f"${m_reg_info['rmse']:,.2f}")
+        rk3.metric("MAE", f"${m_reg_info['mae']:,.2f}")
+
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
         c1, c2 = st.columns(2)
         with c1:
             fig_avp = go.Figure()
             fig_avp.add_trace(go.Scatter(
                 x=avp["actual"], y=avp["predicted"],
-                mode="markers", marker=dict(color="#3b82f6", opacity=0.4, size=4),
+                mode="markers", marker=dict(color="#3b82f6", opacity=0.45, size=5),
                 name="Predictions",
                 hovertemplate="Actual: $%{x:,.0f}<br>Predicted: $%{y:,.0f}<extra></extra>",
             ))
             max_val = max(max(avp["actual"]), max(avp["predicted"]))
-            fig_avp.add_trace(go.Scatter(x=[0, max_val], y=[0, max_val], mode="lines",
-                                          line=dict(color="#ef4444", dash="dash", width=1.5),
-                                          name="Predicted = Actual"))
-            fig_avp.update_layout(title="Actual vs. Predicted Price (Random Forest)",
-                                   xaxis_title="Actual Price ($)", yaxis_title="Predicted Price ($)",
-                                   **PLOTLY_LAYOUT)
+            fig_avp.add_trace(go.Scatter(
+                x=[0, max_val], y=[0, max_val], mode="lines",
+                line=dict(color="#ef4444", dash="dash", width=1.5),
+                name="Predicted = Actual"
+            ))
+            fig_avp.update_layout(
+                title=f"Actual vs. Predicted Price ({reg_viz_model})",
+                xaxis_title="Actual Price ($)", yaxis_title="Predicted Price ($)",
+                **get_layout()
+            )
             st.plotly_chart(fig_avp, use_container_width=True)
 
         with c2:
@@ -578,21 +600,42 @@ if "Regression" in track:
                 x=avp["residuals"], nbinsx=50, marker_color="#f59e0b", opacity=0.8,
                 hovertemplate="Residual: $%{x:,.0f}<br>Count: %{y}<extra></extra>",
             ))
-            fig_res.add_vline(x=0, line_color="#1e293b", line_dash="dash", line_width=1.5)
-            fig_res.update_layout(title="Residual Distribution (Actual − Predicted)",
-                                   xaxis_title="Residual ($)", yaxis_title="Count", **PLOTLY_LAYOUT)
+            fig_res.add_vline(x=0, line_color="#94a3b8", line_dash="dash", line_width=1.5)
+            fig_res.update_layout(
+                title=f"Residual Distribution ({reg_viz_model})",
+                xaxis_title="Residual ($)", yaxis_title="Count",
+                **get_layout()
+            )
             st.plotly_chart(fig_res, use_container_width=True)
 
-        # Feature importance
-        fi_df = pd.DataFrame(fi[:10]).sort_values("importance")
-        fig_fi = go.Figure(go.Bar(
-            x=fi_df["importance"], y=fi_df["feature"], orientation="h",
-            marker_color="#3b82f6", opacity=0.85,
-            text=[f"{v:.3f}" for v in fi_df["importance"]], textposition="outside",
-        ))
-        fig_fi.update_layout(title="Feature Importance — Random Forest (Top 10)",
-                              xaxis_title="Mean Decrease in Impurity", **PLOTLY_LAYOUT)
-        st.plotly_chart(fig_fi, use_container_width=True)
+        # Feature importance / weights if available
+        fi_all = reg_data.get("feature_importances_by_model", {})
+        if reg_viz_model in fi_all:
+            fi_df = pd.DataFrame(fi_all[reg_viz_model][:10]).sort_values("importance")
+            fig_fi = go.Figure(go.Bar(
+                x=fi_df["importance"], y=fi_df["feature"], orientation="h",
+                marker_color="#3b82f6", opacity=0.85,
+                text=[f"{v:.3f}" for v in fi_df["importance"]], textposition="outside",
+            ))
+            fig_fi.update_layout(
+                title=f"Feature Drivers — {reg_viz_model} (Top 10)",
+                xaxis_title="Importance / Coefficient Magnitude",
+                **get_layout()
+            )
+            st.plotly_chart(fig_fi, use_container_width=True)
+        elif "feature_importance" in reg_data:
+            fi_df = pd.DataFrame(reg_data["feature_importance"][:10]).sort_values("importance")
+            fig_fi = go.Figure(go.Bar(
+                x=fi_df["importance"], y=fi_df["feature"], orientation="h",
+                marker_color="#3b82f6", opacity=0.85,
+                text=[f"{v:.3f}" for v in fi_df["importance"]], textposition="outside",
+            ))
+            fig_fi.update_layout(
+                title="Global Feature Importance Benchmark (Top 10)",
+                xaxis_title="Mean Decrease in Impurity",
+                **get_layout()
+            )
+            st.plotly_chart(fig_fi, use_container_width=True)
 
 
 # ─────────────────────────────────────────
@@ -615,13 +658,6 @@ elif "Classification" in track:
     num_feats = clf_data["num_features"]
     cat_feats = clf_data["cat_features"]
     bin_feats = clf_data["bin_features"]
-
-    # Dataset KPIs
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Total Transactions", f"{ds_info['total_rows']:,}")
-    k2.metric("Fraud Cases", f"{ds_info['fraud_count']:,}", f"{ds_info['fraud_pct']}%")
-    k3.metric("Train / Test", f"{ds_info['train_rows']:,} / {ds_info['test_rows']:,}")
-    k4.metric("Feature Count", f"{len(num_feats)+len(cat_feats)+len(bin_feats)}")
 
     tab_pred, tab_compare, tab_charts = st.tabs(["🎯 Classify Transaction", "📊 Model Comparison", "📉 Visualisations"])
 
@@ -713,8 +749,8 @@ elif "Classification" in track:
                         text=[f"{legit_pct}%", f"{fraud_pct}%"], textposition="outside",
                     ))
                     fig_prob.update_layout(yaxis_title="Probability (%)", yaxis_range=[0, 110],
-                                           title="Class Probabilities", **PLOTLY_LAYOUT,
-                                           margin=dict(l=30, r=20, t=40, b=20))
+                                           title="Class Probabilities",
+                                           **get_layout(margin=dict(l=30, r=20, t=40, b=20)))
                     st.plotly_chart(fig_prob, use_container_width=True)
 
                     st.markdown(f"""
@@ -747,8 +783,8 @@ elif "Classification" in track:
                     values=[98500, 1500], hole=0.5,
                     marker_colors=["#22c55e", "#ef4444"],
                 ))
-                fig_bal.update_layout(showlegend=True, **PLOTLY_LAYOUT,
-                                       margin=dict(l=10, r=10, t=10, b=10))
+                fig_bal.update_layout(showlegend=True,
+                                       **get_layout(margin=dict(l=10, r=10, t=10, b=10)))
                 st.plotly_chart(fig_bal, use_container_width=True)
 
     # ── TAB 2: MODEL COMPARISON ──
@@ -797,56 +833,154 @@ elif "Classification" in track:
 
     # ── TAB 3: CHARTS ──
     with tab_charts:
-        model_for_charts = st.selectbox(
-            "Select model for confusion matrix & ROC curve",
-            list(clf_data["models"].keys()), key="clf_chart_model"
-        )
+        sel_c1, sel_c2 = st.columns([2, 1])
+        with sel_c1:
+            model_for_charts = st.selectbox(
+                "Select Classifier for Diagnostic Visualisations",
+                list(clf_data["models"].keys()), key="clf_chart_model"
+            )
+        with sel_c2:
+            overlay_all_roc = st.checkbox("Overlay All Models on ROC Curve", value=False, key="clf_overlay_roc")
+
         m_res = clf_data["models"][model_for_charts]
+
+        # Model Performance KPI strip for selected model
+        pk1, pk2, pk3, pk4, pk5 = st.columns(5)
+        pk1.metric("Accuracy", f"{m_res['accuracy'] * 100:.2f}%")
+        pk2.metric("Precision", f"{m_res['precision'] * 100:.2f}%")
+        pk3.metric("Recall", f"{m_res['recall'] * 100:.2f}%")
+        pk4.metric("Weighted F1", f"{m_res['f1']:.4f}")
+        pk5.metric("ROC-AUC", f"{m_res['roc_auc']:.4f}")
+
+        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
         c1, c2 = st.columns(2)
         with c1:
             cm = np.array(m_res["confusion_matrix"])
-            cm_labels = [["TN", "FP"], ["FN", "TP"]]
-            text_vals = [[f"{cm[i][j]}<br>({cm_labels[i][j]})" for j in range(2)] for i in range(2)]
+            total_legit = cm[0][0] + cm[0][1]
+            total_fraud = cm[1][0] + cm[1][1]
+            tn_pct = (cm[0][0] / total_legit * 100) if total_legit else 0
+            fp_pct = (cm[0][1] / total_legit * 100) if total_legit else 0
+            fn_pct = (cm[1][0] / total_fraud * 100) if total_fraud else 0
+            tp_pct = (cm[1][1] / total_fraud * 100) if total_fraud else 0
+
+            text_vals = [
+                [f"<b>TN: {cm[0][0]:,}</b><br>({tn_pct:.1f}% of legit)", f"<b>FP: {cm[0][1]:,}</b><br>({fp_pct:.1f}% false alarms)"],
+                [f"<b>FN: {cm[1][0]:,}</b><br>({fn_pct:.1f}% missed)", f"<b>TP: {cm[1][1]:,}</b><br>({tp_pct:.1f}% caught)"]
+            ]
             fig_cm = go.Figure(go.Heatmap(
                 z=cm, x=["Predicted: Legit", "Predicted: Fraud"],
                 y=["Actual: Legit", "Actual: Fraud"],
-                colorscale=[[0, "#eff6ff"], [1, "#1d4ed8"]],
+                colorscale=[[0, "#0f172a"], [0.5, "#1e3a8a"], [1, "#2563eb"]],
                 text=text_vals, texttemplate="%{text}",
-                textfont={"size": 13},
+                textfont={"size": 13, "color": "#f8fafc"},
                 showscale=False,
             ))
-            fig_cm.update_layout(title=f"Confusion Matrix — {model_for_charts}", **PLOTLY_LAYOUT)
+            fig_cm.update_layout(title=f"Confusion Matrix — {model_for_charts}", **get_layout(height=340))
             st.plotly_chart(fig_cm, use_container_width=True)
 
         with c2:
+            fig_roc = go.Figure()
+            if overlay_all_roc:
+                for other_name, other_m in clf_data["models"].items():
+                    if other_name != model_for_charts:
+                        fig_roc.add_trace(go.Scatter(
+                            x=other_m["roc_fpr"], y=other_m["roc_tpr"], mode="lines",
+                            line=dict(color="#475569", width=1),
+                            name=f"{other_name} ({other_m['roc_auc']:.3f})",
+                            opacity=0.45, hoverinfo="name"
+                        ))
+
             fpr = m_res["roc_fpr"]
             tpr = m_res["roc_tpr"]
-            fig_roc = go.Figure()
-            fig_roc.add_trace(go.Scatter(x=fpr, y=tpr, mode="lines", fill="tozeroy",
-                                          line=dict(color="#3b82f6", width=2),
-                                          name=f"AUC = {m_res['roc_auc']:.4f}",
-                                          fillcolor="rgba(59,130,246,0.1)"))
-            fig_roc.add_trace(go.Scatter(x=[0,1], y=[0,1], mode="lines",
-                                          line=dict(color="#94a3b8", dash="dash", width=1),
-                                          name="Random baseline", showlegend=True))
-            fig_roc.update_layout(title=f"ROC Curve — {model_for_charts}",
-                                   xaxis_title="False Positive Rate",
-                                   yaxis_title="True Positive Rate", **PLOTLY_LAYOUT)
+            fig_roc.add_trace(go.Scatter(
+                x=fpr, y=tpr, mode="lines", fill="tozeroy",
+                line=dict(color="#3b82f6", width=2.5),
+                name=f"{model_for_charts} (AUC = {m_res['roc_auc']:.4f})",
+                fillcolor="rgba(59,130,246,0.15)"
+            ))
+            fig_roc.add_trace(go.Scatter(
+                x=[0, 1], y=[0, 1], mode="lines",
+                line=dict(color="#94a3b8", dash="dash", width=1),
+                name="Random Baseline", showlegend=True
+            ))
+            fig_roc.update_layout(
+                title=f"ROC Curve — {model_for_charts}",
+                xaxis_title="False Positive Rate",
+                yaxis_title="True Positive Rate",
+                **get_layout(height=340)
+            )
             st.plotly_chart(fig_roc, use_container_width=True)
 
-        # Feature importance
-        fi_clf = clf_data["feature_importance"]
-        if fi_clf:
-            fi_df = pd.DataFrame(fi_clf[:12]).sort_values("importance")
-            fig_fi_clf = go.Figure(go.Bar(
-                x=fi_df["importance"], y=fi_df["feature"], orientation="h",
-                marker_color="#3b82f6", opacity=0.85,
-                text=[f"{v:.4f}" for v in fi_df["importance"]], textposition="outside",
+        # Row 2: Diagnostic outcome breakdown & Feature Importances/Weights
+        c3, c4 = st.columns(2)
+        with c3:
+            cm = np.array(m_res["confusion_matrix"])
+            outcome_names = ["True Legitimate (TN)", "Fraud Caught (TP)", "False Alarm (FP)", "Missed Fraud (FN)"]
+            outcome_counts = [int(cm[0][0]), int(cm[1][1]), int(cm[0][1]), int(cm[1][0])]
+            outcome_colors = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444"]
+
+            fig_breakdown = go.Figure(go.Bar(
+                x=outcome_names, y=outcome_counts,
+                marker_color=outcome_colors,
+                text=[f"{v:,}" for v in outcome_counts],
+                textposition="outside",
             ))
-            fig_fi_clf.update_layout(title="Feature Importance — Random Forest (Top 12)",
-                                      xaxis_title="Gini Importance", **PLOTLY_LAYOUT)
-            st.plotly_chart(fig_fi_clf, use_container_width=True)
+            fig_breakdown.update_layout(
+                title=f"Prediction Breakdown — {model_for_charts}",
+                yaxis_title="Transactions",
+                xaxis_tickangle=-15,
+                **get_layout(height=360)
+            )
+            st.plotly_chart(fig_breakdown, use_container_width=True)
+
+        with c4:
+            fi_models = clf_data.get("feature_importances_by_model", {})
+            if model_for_charts in fi_models:
+                m_fi = fi_models[model_for_charts]
+                top_fi = pd.DataFrame(m_fi[:12]).sort_values("importance")
+                fig_fi = go.Figure(go.Bar(
+                    x=top_fi["importance"], y=top_fi["feature"], orientation="h",
+                    marker_color="#3b82f6", opacity=0.85,
+                    text=[f"{v:.4f}" for v in top_fi["importance"]], textposition="outside",
+                ))
+                x_label = "Coefficient Magnitude (|β|)" if "Logistic" in model_for_charts else "Gini / Split Importance"
+                fig_fi.update_layout(
+                    title=f"Feature Drivers — {model_for_charts} (Top 12)",
+                    xaxis_title=x_label,
+                    **get_layout(height=360)
+                )
+                st.plotly_chart(fig_fi, use_container_width=True)
+            else:
+                all_metrics = ["Accuracy", "Precision", "Recall", "Weighted F1", "ROC-AUC"]
+                model_vals = [m_res["accuracy"], m_res["precision"], m_res["recall"], m_res["f1"], m_res["roc_auc"]]
+                avg_vals = [
+                    float(np.mean([m["accuracy"] for m in clf_data["models"].values()])),
+                    float(np.mean([m["precision"] for m in clf_data["models"].values()])),
+                    float(np.mean([m["recall"] for m in clf_data["models"].values()])),
+                    float(np.mean([m["f1"] for m in clf_data["models"].values()])),
+                    float(np.mean([m["roc_auc"] for m in clf_data["models"].values()])),
+                ]
+
+                fig_bench = go.Figure()
+                fig_bench.add_trace(go.Bar(
+                    name=model_for_charts, x=all_metrics, y=model_vals,
+                    marker_color="#3b82f6", opacity=0.85,
+                    text=[f"{v:.3f}" for v in model_vals], textposition="outside"
+                ))
+                fig_bench.add_trace(go.Bar(
+                    name="10-Model Average", x=all_metrics, y=avg_vals,
+                    marker_color="#64748b", opacity=0.6,
+                    text=[f"{v:.3f}" for v in avg_vals], textposition="outside"
+                ))
+                fig_bench.update_layout(
+                    barmode="group",
+                    title=f"{model_for_charts} vs. Classifiers Average",
+                    yaxis_title="Score",
+                    yaxis_range=[0.85, 1.05],
+                    **get_layout(height=360)
+                )
+                st.plotly_chart(fig_bench, use_container_width=True)
 
 
 # ─────────────────────────────────────────
@@ -957,8 +1091,7 @@ elif "Clustering" in track:
                         ))
                         fig_conf.update_layout(yaxis_range=[0, 110], showlegend=False,
                                                title="Assignment Confidence",
-                                               **PLOTLY_LAYOUT, margin=dict(l=20,r=20,t=40,b=20),
-                                               height=180)
+                                               **get_layout(margin=dict(l=20,r=20,t=40,b=20), height=180))
                         st.plotly_chart(fig_conf, use_container_width=True)
 
                         # Distances to all centroids
