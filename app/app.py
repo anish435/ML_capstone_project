@@ -43,148 +43,275 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    color: #f8fafc !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #e2e8f0 !important;
 }
 
-/* Background & Main App */
+/* Base Canvas & Background - Neutral Slate Dark Mode */
 .stApp {
-    background-color: #080c14 !important;
+    background-color: #0b0f19 !important;
 }
 
-/* Sidebar styling */
+/* Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #0d131f !important;
+    background-color: #0f172a !important;
     border-right: 1px solid #1e293b !important;
 }
 [data-testid="stSidebar"] * { color: #cbd5e1 !important; }
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 { color: #f8fafc !important; }
 
-/* Radio buttons in sidebar */
+/* Radio Navigation in Sidebar */
 [data-testid="stSidebar"] .stRadio label { 
-    background: #121927 !important; border-radius: 9px !important; padding: 12px 14px !important;
-    margin: 4px 0 !important; display: block !important; cursor: pointer !important;
-    border: 1px solid #1e293b !important; transition: all 0.2s ease !important;
-    color: #cbd5e1 !important; font-weight: 500 !important;
+    background: #1e293b !important;
+    border-radius: 6px !important;
+    padding: 10px 14px !important;
+    margin: 4px 0 !important;
+    display: block !important;
+    cursor: pointer !important;
+    border: 1px solid #334155 !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+    color: #cbd5e1 !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
 }
 [data-testid="stSidebar"] .stRadio label:hover { 
-    border-color: #3b82f6 !important; color: #f8fafc !important; 
-    background: #172235 !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
+    border-color: #475569 !important;
+    background: #243247 !important;
+    color: #f8fafc !important; 
 }
 
-/* Metric cards */
+/* Section Kickers */
+.kicker {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #3b82f6;
+    margin-bottom: 2px;
+}
+
+/* Metric Cards - Minimalist Solid KPI Blocks */
 .metric-card {
-    background: #121927; border: 1px solid #1e293b; border-radius: 12px;
-    padding: 18px 22px; text-align: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    background: #131b2e;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    padding: 16px 20px;
+    text-align: left;
 }
-.metric-val { font-size: 1.8rem; font-weight: 700; color: #f8fafc; }
-.metric-lbl { font-size: 0.75rem; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.metric-val {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+}
+.metric-lbl {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
 
-/* Prediction result box */
+/* Prediction Result Box - Clean Solid Alert Styling without neon drop-shadows */
 .pred-box {
-    border-radius: 14px; padding: 24px; margin: 12px 0;
-    border: 1.5px solid transparent; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    padding: 20px;
+    margin: 14px 0;
+    border: 1px solid #334155;
+    background: #131b2e;
 }
-.pred-box.success { background: rgba(16, 185, 129, 0.08); border-color: #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); }
-.pred-box.danger  { background: rgba(239, 68, 68, 0.08); border-color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.2); }
-.pred-box.neutral { background: rgba(59, 130, 246, 0.08); border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.2); }
+.pred-box.success {
+    background: #0d1e1a;
+    border: 1px solid #10b981;
+}
+.pred-box.danger {
+    background: #201217;
+    border: 1px solid #ef4444;
+}
+.pred-box.neutral {
+    background: #111a2e;
+    border: 1px solid #2563eb;
+}
 
-.pred-label { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; color: #f8fafc; }
-.pred-sub   { font-size: 0.9rem; color: #94a3b8; }
+.pred-label {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+}
+.pred-sub {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
 
-/* Cluster badge */
+/* Cluster Badge */
 .cluster-badge {
-    display: inline-block; border-radius: 9999px; padding: 6px 14px;
-    font-weight: 600; font-size: 0.85rem; margin-bottom: 8px;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     border: 1px solid currentColor;
 }
 
-/* Info table */
-.info-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-.info-table td { padding: 9px 12px; border-bottom: 1px solid #1e293b; font-size: 0.88rem; }
-.info-table td:first-child { color: #94a3b8; width: 55%; }
-.info-table td:last-child { font-weight: 600; color: #f8fafc; text-align: right; }
+/* Info Table */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.info-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #1e293b;
+    font-size: 0.84rem;
+}
+.info-table td:first-child {
+    color: #94a3b8;
+    width: 55%;
+}
+.info-table td:last-child {
+    font-weight: 600;
+    color: #f8fafc;
+    text-align: right;
+}
 
-/* Section header */
-.section-hdr { font-size: 1.15rem; font-weight: 600; color: #f8fafc; margin: 20px 0 12px; }
+/* Section Header */
+.section-hdr {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin: 18px 0 10px;
+}
 
 /* Divider */
-hr { border: none; border-top: 1px solid #1e293b; margin: 24px 0; }
+hr {
+    border: none;
+    border-top: 1px solid #1e293b;
+    margin: 20px 0;
+}
 
-/* Cluster profile card */
+/* Cluster Profile Card */
 .clu-card {
-    background: #121927; border-radius: 12px; padding: 20px;
-    border: 1px solid #1e293b; margin-bottom: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: #131b2e;
+    border-radius: 6px;
+    padding: 18px;
+    border: 1px solid #1e293b;
+    margin-bottom: 12px;
 }
 
-/* Distance bar */
-.dist-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.84rem; }
-.dist-name { width: 200px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dist-bar-wrap { flex: 1; background: #1e293b; border-radius: 4px; height: 8px; }
-.dist-bar { height: 8px; border-radius: 4px; }
-.dist-val { width: 55px; text-align: right; color: #f8fafc; font-weight: 600; }
+/* Distance Bar */
+.dist-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    font-size: 0.82rem;
+}
+.dist-name {
+    width: 200px;
+    color: #cbd5e1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dist-bar-wrap {
+    flex: 1;
+    background: #1e293b;
+    border-radius: 3px;
+    height: 6px;
+}
+.dist-bar {
+    height: 6px;
+    border-radius: 3px;
+}
+.dist-val {
+    width: 55px;
+    text-align: right;
+    color: #f8fafc;
+    font-weight: 600;
+}
 
-/* Confidence bar */
-.conf-wrap { background: #1e293b; border-radius: 6px; height: 12px; margin: 10px 0; overflow: hidden; }
-.conf-fill { height: 12px; border-radius: 6px; }
+/* Confidence Bar */
+.conf-wrap {
+    background: #1e293b;
+    border-radius: 4px;
+    height: 8px;
+    margin: 8px 0;
+    overflow: hidden;
+}
+.conf-fill {
+    height: 8px;
+    border-radius: 4px;
+}
 
-/* Inputs styling */
-.stNumberInput input, .stSelectbox [data-baseweb="select"] {
-    background-color: #0a0f1a !important;
+/* Form Controls - Inputs & Dropdowns */
+.stNumberInput input, .stSelectbox [data-baseweb="select"], .stTextInput input {
+    background-color: #101726 !important;
     color: #f8fafc !important;
-    border: 1px solid #1e293b !important;
-    border-radius: 8px !important;
+    border: 1px solid #243044 !important;
+    border-radius: 6px !important;
+    font-size: 0.9rem !important;
 }
-.stNumberInput input:focus, .stSelectbox [data-baseweb="select"]:focus {
+.stNumberInput input:focus, .stSelectbox [data-baseweb="select"]:focus, .stTextInput input:focus {
     border-color: #3b82f6 !important;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
-/* Primary Button Styling */
+/* Primary Action Buttons - Solid Professional SaaS */
 button[kind="primary"] {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    background-color: #2563eb !important;
+    background-image: none !important;
     border: 1px solid #3b82f6 !important;
     color: #ffffff !important;
-    border-radius: 9px !important;
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4) !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.02em !important;
-    transition: all 0.2s ease !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    padding: 8px 16px !important;
+    transition: background-color 0.15s ease !important;
 }
 button[kind="primary"]:hover {
-    box-shadow: 0 0 30px rgba(37, 99, 235, 0.7) !important;
-    transform: translateY(-1px) !important;
+    background-color: #1d4ed8 !important;
+    border-color: #2563eb !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
-/* Streamlit tab overrides */
+/* Tabs - Clean Segmented Control with Active Hairline */
 .stTabs [data-baseweb="tab-list"] {
-    background: #0d131f;
-    border-radius: 10px;
-    padding: 6px;
-    border: 1px solid #1e293b;
-    gap: 6px;
+    background: transparent;
+    border-bottom: 1px solid #1e293b;
+    padding: 0;
+    gap: 8px;
 }
 .stTabs [data-baseweb="tab"] {
-    border-radius: 7px;
-    padding: 8px 20px;
+    border-radius: 6px 6px 0 0;
+    padding: 8px 16px;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #94a3b8 !important;
     background: transparent;
     border: none;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
 }
 .stTabs [data-baseweb="tab"]:hover {
     color: #f8fafc !important;
-    background: rgba(255, 255, 255, 0.04);
+    background: transparent;
 }
 .stTabs [aria-selected="true"] {
-    background: #1e293b !important;
-    color: #60a5fa !important;
+    background: transparent !important;
+    color: #3b82f6 !important;
     font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid #3b82f6 !important;
+    box-shadow: none !important;
 }
 
 /* Hide Streamlit default branding */
@@ -348,14 +475,14 @@ def load_clustering_data():
 # PLOTLY THEME HELPER
 # ─────────────────────────────────────────
 PLOTLY_LAYOUT = dict(
-    font_family="Inter, sans-serif",
-    font_color="#cbd5e1",
+    font_family="Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    font_color="#94a3b8",
     paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="#0d131f",
+    plot_bgcolor="#0f172a",
     margin=dict(l=40, r=20, t=40, b=40),
-    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1")),
-    xaxis=dict(gridcolor="#1e293b", color="#94a3b8"),
-    yaxis=dict(gridcolor="#1e293b", color="#94a3b8"),
+    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=11)),
+    xaxis=dict(gridcolor="#1e293b", color="#64748b", zerolinecolor="#1e293b"),
+    yaxis=dict(gridcolor="#1e293b", color="#64748b", zerolinecolor="#1e293b"),
 )
 
 def get_layout(**kwargs):
@@ -371,18 +498,18 @@ CLUSTER_COLORS = {0: "#3b82f6", 1: "#ef4444", 2: "#10b981", 3: "#8b5cf6"}
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-<div style="display:flex;align-items:center;gap:12px;padding:4px 0 16px;border-bottom:1px solid #1e293b;margin-bottom:16px;">
-  <div style="width:38px;height:38px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:1.25rem;font-weight:700;">❖</div>
+<div style="display:flex;align-items:center;gap:10px;padding:4px 0 14px;border-bottom:1px solid #1e293b;margin-bottom:14px;">
+  <div style="width:32px;height:32px;background:#1e293b;border:1px solid #334155;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#f8fafc;font-size:0.85rem;font-weight:700;">ML</div>
   <div>
-    <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;letter-spacing:-0.02em;">ML Capstone</div>
-    <div style="font-size:0.75rem;color:#60a5fa;font-weight:500;">23CSE301 · Amrita VV</div>
+    <div style="font-weight:600;font-size:0.95rem;color:#f8fafc;letter-spacing:-0.01em;">ML Platform</div>
+    <div style="font-size:0.75rem;color:#64748b;">23CSE301 · Amrita VV</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
     track = st.radio(
-        "**ML Tracks**",
-        ["📈  Regression (Diamonds)", "🛡️  Classification (Fraud)", "🔵  Clustering (Amazon)"],
+        "Module Selection",
+        ["Regression (Diamonds)", "Classification (Fraud)", "Clustering (Amazon)"],
         index=0,
         label_visibility="visible",
     )
@@ -390,29 +517,27 @@ with st.sidebar:
     st.markdown("---")
     M = load_models()
 
-    def status_dot(ready): return "🟢" if ready else "🔴"
-
     if M["reg"]["ready"] and M["clf"]["ready"] and M["clust"]["ready"]:
         st.markdown("""
-<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
-  <div style="display:flex;align-items:center;gap:8px;color:#10b981;font-weight:600;font-size:0.85rem;">
-    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 10px #10b981;"></span>
-    All Systems Live
+<div style="background:#131b2e;border:1px solid #1e293b;border-radius:6px;padding:10px 12px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:6px;color:#10b981;font-weight:600;font-size:0.8rem;">
+    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;"></span>
+    All Systems Operational
   </div>
-  <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">10 Regression · 10 Clf · K=4 Clust</div>
+  <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">10 Regressors · 10 Classifiers · K=4 Clusters</div>
 </div>
 """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-**Model Status**
+**System Status**
 
-{status_dot(M['reg']['ready'])} Regression (Diamonds)  
-{status_dot(M['clf']['ready'])} Classification (Fraud)  
-{status_dot(M['clust']['ready'])} Clustering (Amazon)
+Regression: {'Operational' if M['reg']['ready'] else 'Offline'}  
+Classification: {'Operational' if M['clf']['ready'] else 'Offline'}  
+Clustering: {'Operational' if M['clust']['ready'] else 'Offline'}
 """)
-        st.warning("Run `python app/train_models.py` to generate model artifacts.", icon="⚠️")
+        st.warning("Run `python app/train_models.py` to generate model artifacts.")
 
-    st.markdown("<small style='color:#64748b'>Amrita VV · CB.SC.U4CSE24125</small>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.72rem;color:#64748b;'>Student ID: CB.SC.U4CSE24125</div>", unsafe_allow_html=True)
 
 
 
@@ -423,17 +548,18 @@ with st.sidebar:
 # ─────────────────────────────────────────
 if "Regression" in track:
 
-    st.title("💎 Diamond Price Regression")
-    st.markdown("Predict diamond prices from physical measurements and quality grades. Trained on **53,920 clean diamonds** from the GIA dataset.")
+    st.markdown('<div class="kicker">Regression Analysis</div>', unsafe_allow_html=True)
+    st.title("Diamond Valuation Engine")
+    st.markdown("Predict diamond prices from physical dimensions and quality grades. Evaluated on **53,920 clean diamonds** from the GIA dataset.")
 
     if not M["reg"]["ready"]:
-        st.error(f"⚠️ Regression models not loaded: `{M['reg'].get('error','unknown')}`\n\nRun `python train_models.py` inside the `gui/` folder first.")
+        st.error(f"Regression models not loaded: `{M['reg'].get('error','unknown')}`\n\nRun `python train_models.py` inside the `gui/` folder first.")
         st.stop()
 
     reg_data = load_json_metadata("reg_data.json")
     cat_info  = reg_data["categorical_info"]
 
-    tab_pred, tab_compare, tab_charts = st.tabs(["🎯 Predict Price", "📊 Model Comparison", "📉 Visualisations"])
+    tab_pred, tab_compare, tab_charts = st.tabs(["Predict Price", "Model Comparison", "Visualisations"])
 
     # ── TAB 1: PREDICT ──
     with tab_pred:
@@ -459,10 +585,10 @@ if "Regression" in track:
             volume = round(x_val * y_val * z_val, 3)
             st.caption(f"Computed volume: **{volume} mm³**")
 
-            predict_btn = st.button("🔮 Predict Price", type="primary", use_container_width=True, key="reg_predict")
+            predict_btn = st.button("Predict Price", type="primary", use_container_width=True, key="reg_predict")
 
         with col_result:
-            st.markdown("##### Prediction Result")
+            st.markdown("##### Valuation Result")
 
             if predict_btn:
                 try:
@@ -477,27 +603,27 @@ if "Regression" in track:
 
                     st.markdown(f"""
 <div class="pred-box neutral">
-  <div class="pred-label">💲 {pred:,.2f}</div>
-  <div class="pred-sub">Estimated price using <strong>{model_choice}</strong></div>
+  <div class="pred-label">${pred:,.2f}</div>
+  <div class="pred-sub">Estimated value via <strong>{model_choice}</strong></div>
 </div>
 """, unsafe_allow_html=True)
 
                     st.markdown("**Input Summary**")
                     st.markdown(f"""
 <table class="info-table">
-  <tr><td>Carat</td><td>{carat}</td></tr>
-  <tr><td>Cut / Color / Clarity</td><td>{cut} · {color} · {clarity}</td></tr>
-  <tr><td>Dimensions (x·y·z)</td><td>{x_val}×{y_val}×{z_val} mm</td></tr>
-  <tr><td>Volume</td><td>{volume} mm³</td></tr>
-  <tr><td>Depth / Table</td><td>{depth}% / {table}%</td></tr>
-  <tr><td>Model</td><td>{model_choice}</td></tr>
+  <tr><td>Carat Weight</td><td>{carat}</td></tr>
+  <tr><td>Grade (Cut / Color / Clarity)</td><td>{cut} · {color} · {clarity}</td></tr>
+  <tr><td>Dimensions (x · y · z)</td><td>{x_val} × {y_val} × {z_val} mm</td></tr>
+  <tr><td>Displacement Volume</td><td>{volume} mm³</td></tr>
+  <tr><td>Proportions (Depth / Table)</td><td>{depth}% / {table}%</td></tr>
+  <tr><td>Estimator Architecture</td><td>{model_choice}</td></tr>
 </table>
 """, unsafe_allow_html=True)
 
                 except Exception as e:
                     st.error(f"Prediction error: {e}")
             else:
-                st.info("Fill in the diamond attributes on the left and click **Predict Price**.", icon="💎")
+                st.info("Fill in diamond specifications and click **Predict Price**.")
 
                 st.markdown("**About the features**")
                 st.markdown("""
@@ -695,11 +821,12 @@ if "Regression" in track:
 # ─────────────────────────────────────────
 elif "Classification" in track:
 
-    st.title("🛡️ Fraud Transaction Detection")
-    st.markdown("Binary classification on **100,000 financial transactions**. Target: `risk_label` — 0 = Legitimate, 1 = Fraud (~1.5% prevalence).")
+    st.markdown('<div class="kicker">Binary Classification</div>', unsafe_allow_html=True)
+    st.title("Fraud Transaction Detection")
+    st.markdown("Real-time risk scoring across **100,000 financial transactions**. Target: `risk_label` — 0 = Legitimate, 1 = Fraud (~1.5% base prevalence).")
 
     if not M["clf"]["ready"]:
-        st.error(f"⚠️ Classification models not loaded: `{M['clf'].get('error','unknown')}`\n\nRun `python train_models.py` first.")
+        st.error(f"Classification models not loaded: `{M['clf'].get('error','unknown')}`\n\nRun `python train_models.py` first.")
         st.stop()
 
     clf_data = load_json_metadata("clf_data.json")
@@ -709,7 +836,7 @@ elif "Classification" in track:
     cat_feats = clf_data["cat_features"]
     bin_feats = clf_data["bin_features"]
 
-    tab_pred, tab_compare, tab_charts = st.tabs(["🎯 Classify Transaction", "📊 Model Comparison", "📉 Visualisations"])
+    tab_pred, tab_compare, tab_charts = st.tabs(["Classify Transaction", "Model Comparison", "Visualisations"])
 
     # ── TAB 1: PREDICT ──
     with tab_pred:
@@ -751,10 +878,10 @@ elif "Classification" in track:
             amount_ratio = txn_amt / (avg_amt + 1)
             st.caption(f"Computed `amount_ratio` = **{amount_ratio:.3f}** (current ÷ 30-day avg)")
 
-            clf_btn = st.button("🛡️ Classify Transaction", type="primary", use_container_width=True, key="clf_predict")
+            clf_btn = st.button("Classify Transaction", type="primary", use_container_width=True, key="clf_predict")
 
         with col_result:
-            st.markdown("##### Classification Result")
+            st.markdown("##### Classification Assessment")
 
             if clf_btn:
                 try:
@@ -782,20 +909,20 @@ elif "Classification" in track:
 
                     is_fraud = pred_class == 1
                     box_cls  = "danger" if is_fraud else "success"
-                    label    = "⚠️ FRAUD" if is_fraud else "✅ LEGITIMATE"
+                    label    = "High Risk: Fraud Flagged" if is_fraud else "Low Risk: Legitimate Transaction"
                     risk_lvl = "High" if fraud_pct > 70 else ("Medium" if fraud_pct > 30 else "Low")
 
                     st.markdown(f"""
 <div class="pred-box {box_cls}">
   <div class="pred-label">{label}</div>
-  <div class="pred-sub">Risk level: <strong>{risk_lvl}</strong> · Model: {clf_model}</div>
+  <div class="pred-sub">Assessment: <strong>{risk_lvl} Risk</strong> ({fraud_pct}% fraud confidence) · Model: {clf_model}</div>
 </div>
 """, unsafe_allow_html=True)
 
                     # Probability bars
                     fig_prob = go.Figure(go.Bar(
                         x=["Legitimate", "Fraud"], y=[legit_pct, fraud_pct],
-                        marker_color=["#22c55e", "#ef4444"],
+                        marker_color=["#10b981", "#ef4444"],
                         text=[f"{legit_pct}%", f"{fraud_pct}%"], textposition="outside",
                     ))
                     fig_prob.update_layout(yaxis_title="Probability (%)", yaxis_range=[0, 110],
@@ -818,14 +945,14 @@ elif "Classification" in track:
                 except Exception as e:
                     st.error(f"Classification error: {e}")
             else:
-                st.info("Fill in transaction details and click **Classify Transaction**.", icon="🛡️")
+                st.info("Enter transaction attributes and click **Classify Transaction**.")
 
                 st.markdown("**Class Definitions**")
                 st.markdown("""
-| Class | Label | Description |
+| Class | Status | Description |
 |:---:|---|---|
-| 0 | ✅ Legitimate | Normal transaction within customer behaviour |
-| 1 | ⚠️ Fraud | Suspicious transaction flagged for review |
+| 0 | Legitimate | Standard transaction within customer baseline profile |
+| 1 | Fraud | Anomalous transaction flagged for security review |
 """)
                 st.markdown("**Dataset Balance**")
                 fig_bal = go.Figure(go.Pie(
@@ -1040,17 +1167,18 @@ elif "Classification" in track:
 # ─────────────────────────────────────────
 elif "Clustering" in track:
 
-    st.title("🔵 Amazon Product Segmentation")
-    st.markdown("K-Means clustering (k=4) on **47,921 Amazon products** using pricing, reviews, purchase velocity, ratings, and discount signals.")
+    st.markdown('<div class="kicker">Unsupervised Segmentation</div>', unsafe_allow_html=True)
+    st.title("Catalog Product Segmentation")
+    st.markdown("K-Means clustering (k=4) on **47,921 Amazon retail products** across pricing, social proof, velocity, and promotional metrics.")
 
     if not M["clust"]["ready"]:
-        st.error(f"⚠️ Clustering model not loaded: `{M['clust'].get('error','unknown')}`\n\nRun `python train_models.py` first.")
+        st.error(f"Clustering model not loaded: `{M['clust'].get('error','unknown')}`\n\nRun `python train_models.py` first.")
         st.stop()
 
     C = load_clustering_data()
 
     tab_classify, tab_analysis, tab_pca, tab_catalog = st.tabs([
-        "🎯 Classify Product", "📊 Cluster Analysis", "📉 PCA & Diagnostics", "🔍 Catalog Explorer"
+        "Classify Product", "Cluster Analysis", "PCA & Diagnostics", "Catalog Explorer"
     ])
 
     # ── TAB 1: CLASSIFY PRODUCT ──
@@ -1063,17 +1191,17 @@ elif "Clustering" in track:
             # Quick presets
             preset = st.selectbox("Quick preset", [
                 "— Custom —",
-                "⚡ Viral High-Velocity Product",
-                "🏷️ Discount-Driven Item",
-                "📦 Standard Full-Price Product",
-                "✨ New / Unrated Listing",
+                "High-Velocity Bestseller",
+                "Discount-Driven Item",
+                "Standard Full-Price Item",
+                "New / Unrated Cold-Start Listing",
             ], key="clust_preset")
 
             PRESETS = {
-                "⚡ Viral High-Velocity Product":  (24.99, 0.0,  4.7, 8200, 3100),
-                "🏷️ Discount-Driven Item":         (39.99, 79.99, 4.2, 1200, 320),
-                "📦 Standard Full-Price Product":  (19.99, 0.0,  4.5, 640,  150),
-                "✨ New / Unrated Listing":         (129.99, 0.0, 0.0, 0,    0),
+                "High-Velocity Bestseller":       (24.99, 0.0,  4.7, 8200, 3100),
+                "Discount-Driven Item":          (39.99, 79.99, 4.2, 1200, 320),
+                "Standard Full-Price Item":       (19.99, 0.0,  4.5, 640,  150),
+                "New / Unrated Cold-Start Listing": (129.99, 0.0, 0.0, 0,    0),
             }
 
             def_price, def_list, def_stars, def_rev, def_bought = (
@@ -1092,7 +1220,7 @@ elif "Clustering" in track:
 
             st.caption(f"`has_rating` = **{'Yes' if has_rating else 'No'}** · `has_discount` = **{'Yes' if has_discount else 'No'}** · `stars_imputed` = **{stars_imp:.2f}**")
 
-            clust_btn = st.button("🔵 Classify Product", type="primary", use_container_width=True, key="clust_predict")
+            clust_btn = st.button("Assign Product to Cluster", type="primary", use_container_width=True, key="clust_predict")
 
         with col_result:
             st.markdown("##### Cluster Assignment")
@@ -1124,12 +1252,12 @@ elif "Clustering" in track:
                         profile = C["profiles"][pred_c]
 
                         st.markdown(f"""
-<div class="pred-box neutral" style="border-color:{meta['color']}; background: {meta['color']}18;">
-  <div class="cluster-badge" style="background:{meta['color']}22; color:{meta['color']};">
+<div class="pred-box neutral" style="border-left: 3px solid {meta['color']};">
+  <div class="cluster-badge" style="color:{meta['color']}; border-color:{meta['color']};">
     Cluster {pred_c} · {meta['tag']}
   </div>
-  <div class="pred-label" style="color:{meta['color']};">{meta['name']}</div>
-  <div class="pred-sub">Centroid confidence: <strong>{confidence}%</strong></div>
+  <div class="pred-label" style="color:#f8fafc;">{meta['name']}</div>
+  <div class="pred-sub">Centroid Confidence: <strong>{confidence}%</strong> · Nearest Distance: {nearest_dist:.3f}</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1163,9 +1291,9 @@ elif "Clustering" in track:
                         st.markdown("**Cluster Profile**")
                         st.markdown(f"""
 <table class="info-table">
-  <tr><td>Products in cluster</td><td>{profile['count']:,} ({profile['share']}%)</td></tr>
+  <tr><td>Products in Cluster</td><td>{profile['count']:,} ({profile['share']}%)</td></tr>
   <tr><td>Median Price</td><td>${profile['median_price']:.2f}</td></tr>
-  <tr><td>Mean Rating</td><td>{'⭐' * int(round(profile['mean_stars']))} ({profile['mean_stars']:.2f})</td></tr>
+  <tr><td>Mean Rating</td><td>{profile['mean_stars']:.2f} / 5.00</td></tr>
   <tr><td>Mean Review Count</td><td>{profile['mean_reviews']:,.0f}</td></tr>
   <tr><td>Avg Monthly Purchases</td><td>{profile['mean_bought']:,.0f}</td></tr>
   <tr><td>Discount Rate</td><td>{profile['discount_rate']}%</td></tr>
@@ -1176,15 +1304,15 @@ elif "Clustering" in track:
                     except Exception as e:
                         st.error(f"Clustering error: {e}")
             else:
-                st.info("Select a preset or enter product attributes, then click **Classify Product**.", icon="🔵")
+                st.info("Select a preset or enter product attributes, then click **Assign Product to Cluster**.")
 
-                st.markdown("**The 4 Clusters**")
+                st.markdown("**Segment Definitions**")
                 for cid, meta in C["meta"].items():
                     p = C["profiles"][cid]
                     st.markdown(f"""
-<div class="clu-card" style="border-color:{meta['color']}; background:{meta['color']}10;">
-  <strong style="color:{meta['color']};">Cluster {cid} — {meta['name']}</strong>
-  <div style="color:#64748b; font-size:0.82rem; margin-top:4px;">{p['count']:,} products ({p['share']}%) · Median ${p['median_price']:.2f} · Discount rate {p['discount_rate']}%</div>
+<div class="clu-card" style="border-left: 3px solid {meta['color']};">
+  <div style="font-weight:600; color:{meta['color']}; font-size:0.88rem;">Cluster {cid} — {meta['name']}</div>
+  <div style="color:#94a3b8; font-size:0.8rem; margin-top:3px;">{p['count']:,} products ({p['share']}%) · Median ${p['median_price']:.2f} · Discount rate {p['discount_rate']}%</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1204,16 +1332,16 @@ elif "Clustering" in track:
             meta = C["meta"][cid]
             with cols[cid]:
                 st.markdown(f"""
-<div class="clu-card" style="border-color:{meta['color']}; background:{meta['color']}10; text-align:center;">
+<div class="clu-card" style="border-top: 3px solid {meta['color']}; text-align:center;">
   <div style="font-size:1.5rem; font-weight:700; color:{meta['color']};">{p['share']}%</div>
-  <div style="font-weight:600; color:#1e293b; margin:4px 0;">{meta['name']}</div>
-  <div style="color:#64748b; font-size:0.78rem;">{p['count']:,} products</div>
-  <hr style="border-color:{meta['color']}33; margin:10px 0;">
-  <div style="font-size:0.78rem; color:#475569;">
-    💰 ${p['median_price']:.0f} median<br>
-    ⭐ {p['mean_stars']:.1f} stars<br>
-    📝 {p['mean_reviews']:,.0f} reviews<br>
-    📦 {p['mean_bought']:,.0f}/mo velocity
+  <div style="font-weight:600; color:#f8fafc; font-size:0.85rem; margin:4px 0;">{meta['name']}</div>
+  <div style="color:#94a3b8; font-size:0.75rem;">{p['count']:,} items</div>
+  <hr style="border-color:#1e293b; margin:10px 0;">
+  <div style="font-size:0.78rem; color:#94a3b8; line-height:1.6;">
+    Median ${p['median_price']:.0f}<br>
+    Rating: {p['mean_stars']:.1f} / 5.0<br>
+    {p['mean_reviews']:,.0f} reviews avg<br>
+    {p['mean_bought']:,.0f}/mo velocity
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1379,21 +1507,21 @@ elif "Clustering" in track:
             cid = int(row["Cluster"])
             color = C["meta"][cid]["color"]
             with grid_cols[i % 3]:
-                disc_badge = f'<span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:4px;font-size:0.72rem;margin-left:6px;">SALE</span>' if row["has_discount"] else ""
+                disc_badge = f'<span style="background:#272215;color:#f59e0b;border:1px solid #78350f;padding:1px 6px;border-radius:3px;font-size:0.7rem;margin-left:6px;">SALE</span>' if row["has_discount"] else ""
                 st.markdown(f"""
-<div style="border:1px solid #e2e8f0;border-left:3px solid {color};border-radius:8px;padding:12px;margin-bottom:10px;background:#fff;">
-  <div style="font-size:0.78rem;color:{color};font-weight:600;margin-bottom:4px;">
+<div style="border:1px solid #1e293b;border-left:3px solid {color};border-radius:6px;padding:12px;margin-bottom:10px;background:#131b2e;">
+  <div style="font-size:0.75rem;color:{color};font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;">
     C{cid} · {C['meta'][cid]['tag']}{disc_badge}
   </div>
-  <div style="font-size:0.83rem;font-weight:600;color:#1e293b;margin-bottom:6px;line-height:1.3;height:2.6rem;overflow:hidden;">
+  <div style="font-size:0.83rem;font-weight:600;color:#f8fafc;margin-bottom:6px;line-height:1.35;height:2.6rem;overflow:hidden;">
     {str(row['title'])[:80]}
   </div>
-  <div style="font-size:0.78rem;color:#64748b;">{row['category_name']}</div>
+  <div style="font-size:0.75rem;color:#94a3b8;">{row['category_name']}</div>
   <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:0.82rem;">
-    <span style="font-weight:700;color:#1e293b;">${row['price']:.2f}</span>
-    <span style="color:#64748b;">⭐ {row['stars']:.1f} · {int(row['reviews']):,} reviews</span>
+    <span style="font-weight:700;color:#f8fafc;">${row['price']:.2f}</span>
+    <span style="color:#94a3b8;">{row['stars']:.1f} ★ · {int(row['reviews']):,} reviews</span>
   </div>
-  <div style="font-size:0.75rem;color:#94a3b8;margin-top:2px;">{int(row['boughtInLastMonth']):,} bought/month</div>
+  <div style="font-size:0.72rem;color:#64748b;margin-top:3px;">{int(row['boughtInLastMonth']):,} bought/month</div>
 </div>
 """, unsafe_allow_html=True)
 
