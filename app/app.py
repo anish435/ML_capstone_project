@@ -42,103 +42,156 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: #f8fafc !important;
+}
+
+/* Background & Main App */
+.stApp {
+    background-color: #080c14 !important;
+}
 
 /* Sidebar styling */
 [data-testid="stSidebar"] {
-    background-color: #0f172a;
-    border-right: 1px solid #1e293b;
+    background-color: #0d131f !important;
+    border-right: 1px solid #1e293b !important;
 }
 [data-testid="stSidebar"] * { color: #cbd5e1 !important; }
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 { color: #f1f5f9 !important; }
+[data-testid="stSidebar"] h3 { color: #f8fafc !important; }
 
 /* Radio buttons in sidebar */
 [data-testid="stSidebar"] .stRadio label { 
-    background: #1e293b; border-radius: 8px; padding: 10px 14px;
-    margin: 3px 0; display: block; cursor: pointer;
-    border: 1px solid transparent; transition: all 0.15s;
-    color: #94a3b8 !important;
+    background: #121927 !important; border-radius: 9px !important; padding: 12px 14px !important;
+    margin: 4px 0 !important; display: block !important; cursor: pointer !important;
+    border: 1px solid #1e293b !important; transition: all 0.2s ease !important;
+    color: #cbd5e1 !important; font-weight: 500 !important;
 }
 [data-testid="stSidebar"] .stRadio label:hover { 
-    border-color: #3b82f6; color: #e2e8f0 !important; 
-    background: #263449;
+    border-color: #3b82f6 !important; color: #f8fafc !important; 
+    background: #172235 !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
 }
 
 /* Metric cards */
 .metric-card {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
-    padding: 16px 20px; text-align: center;
+    background: #121927; border: 1px solid #1e293b; border-radius: 12px;
+    padding: 18px 22px; text-align: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
-.metric-val { font-size: 1.6rem; font-weight: 700; color: #1e293b; }
-.metric-lbl { font-size: 0.75rem; color: #64748b; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-val { font-size: 1.8rem; font-weight: 700; color: #f8fafc; }
+.metric-lbl { font-size: 0.75rem; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
 /* Prediction result box */
 .pred-box {
-    border-radius: 12px; padding: 24px; margin: 12px 0;
-    border: 2px solid transparent;
+    border-radius: 14px; padding: 24px; margin: 12px 0;
+    border: 1.5px solid transparent; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
-.pred-box.success { background: #f0fdf4; border-color: #22c55e; }
-.pred-box.danger  { background: #fef2f2; border-color: #ef4444; }
-.pred-box.neutral { background: #eff6ff; border-color: #3b82f6; }
+.pred-box.success { background: rgba(16, 185, 129, 0.08); border-color: #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); }
+.pred-box.danger  { background: rgba(239, 68, 68, 0.08); border-color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.2); }
+.pred-box.neutral { background: rgba(59, 130, 246, 0.08); border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.2); }
 
-.pred-label { font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
-.pred-sub   { font-size: 0.9rem; color: #475569; }
+.pred-label { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; color: #f8fafc; }
+.pred-sub   { font-size: 0.9rem; color: #94a3b8; }
 
 /* Cluster badge */
 .cluster-badge {
-    display: inline-block; border-radius: 8px; padding: 6px 14px;
+    display: inline-block; border-radius: 9999px; padding: 6px 14px;
     font-weight: 600; font-size: 0.85rem; margin-bottom: 8px;
+    border: 1px solid currentColor;
 }
 
 /* Info table */
-.info-table { width: 100%; border-collapse: collapse; }
-.info-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
-.info-table td:first-child { color: #64748b; width: 55%; }
-.info-table td:last-child { font-weight: 600; color: #1e293b; text-align: right; }
+.info-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.info-table td { padding: 9px 12px; border-bottom: 1px solid #1e293b; font-size: 0.88rem; }
+.info-table td:first-child { color: #94a3b8; width: 55%; }
+.info-table td:last-child { font-weight: 600; color: #f8fafc; text-align: right; }
 
 /* Section header */
-.section-hdr { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 18px 0 10px; }
+.section-hdr { font-size: 1.15rem; font-weight: 600; color: #f8fafc; margin: 20px 0 12px; }
 
 /* Divider */
-hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+hr { border: none; border-top: 1px solid #1e293b; margin: 24px 0; }
 
 /* Cluster profile card */
 .clu-card {
-    border-radius: 12px; padding: 18px; border: 2px solid;
-    margin-bottom: 12px;
+    background: #121927; border-radius: 12px; padding: 20px;
+    border: 1px solid #1e293b; margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Distance bar */
-.dist-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 0.82rem; }
-.dist-name { width: 200px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dist-bar-wrap { flex: 1; background: #f1f5f9; border-radius: 4px; height: 8px; }
+.dist-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.84rem; }
+.dist-name { width: 200px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dist-bar-wrap { flex: 1; background: #1e293b; border-radius: 4px; height: 8px; }
 .dist-bar { height: 8px; border-radius: 4px; }
-.dist-val { width: 50px; text-align: right; color: #1e293b; font-weight: 500; }
+.dist-val { width: 55px; text-align: right; color: #f8fafc; font-weight: 600; }
 
 /* Confidence bar */
-.conf-wrap { background: #f1f5f9; border-radius: 6px; height: 12px; margin: 8px 0; overflow: hidden; }
+.conf-wrap { background: #1e293b; border-radius: 6px; height: 12px; margin: 10px 0; overflow: hidden; }
 .conf-fill { height: 12px; border-radius: 6px; }
 
-/* Not-ready warning */
-.not-ready {
-    background: #fef9c3; border: 1px solid #fde047; border-radius: 10px;
-    padding: 14px 18px; color: #713f12; font-size: 0.9rem; margin: 16px 0;
+/* Inputs styling */
+.stNumberInput input, .stSelectbox [data-baseweb="select"] {
+    background-color: #0a0f1a !important;
+    color: #f8fafc !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 8px !important;
+}
+.stNumberInput input:focus, .stSelectbox [data-baseweb="select"]:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Primary Button Styling */
+button[kind="primary"] {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border: 1px solid #3b82f6 !important;
+    color: #ffffff !important;
+    border-radius: 9px !important;
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    transition: all 0.2s ease !important;
+}
+button[kind="primary"]:hover {
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.7) !important;
+    transform: translateY(-1px) !important;
 }
 
 /* Streamlit tab overrides */
-.stTabs [data-baseweb="tab-list"] { gap: 4px; }
+.stTabs [data-baseweb="tab-list"] {
+    background: #0d131f;
+    border-radius: 10px;
+    padding: 6px;
+    border: 1px solid #1e293b;
+    gap: 6px;
+}
 .stTabs [data-baseweb="tab"] {
-    border-radius: 8px 8px 0 0; padding: 8px 18px;
-    font-weight: 500; font-size: 0.875rem;
+    border-radius: 7px;
+    padding: 8px 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #94a3b8 !important;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.04);
+}
+.stTabs [aria-selected="true"] {
+    background: #1e293b !important;
+    color: #60a5fa !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-button[kind="primary"] { border-radius: 8px !important; }
-
-/* hide streamlit branding */
+/* Hide Streamlit default branding */
 #MainMenu, footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ─────────────────────────────────────────
 # MODEL LOADING (cached)
@@ -291,10 +344,13 @@ def load_clustering_data():
 # ─────────────────────────────────────────
 PLOTLY_LAYOUT = dict(
     font_family="Inter, sans-serif",
+    font_color="#cbd5e1",
     paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="#f8fafc",
+    plot_bgcolor="#0d131f",
     margin=dict(l=40, r=20, t=40, b=40),
-    legend=dict(bgcolor="rgba(0,0,0,0)"),
+    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1")),
+    xaxis=dict(gridcolor="#1e293b", color="#94a3b8"),
+    yaxis=dict(gridcolor="#1e293b", color="#94a3b8"),
 )
 
 CLUSTER_COLORS = {0: "#3b82f6", 1: "#ef4444", 2: "#10b981", 3: "#8b5cf6"}
@@ -303,14 +359,20 @@ CLUSTER_COLORS = {0: "#3b82f6", 1: "#ef4444", 2: "#10b981", 3: "#8b5cf6"}
 # SIDEBAR
 # ─────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 🔬 ML Capstone")
-    st.markdown("<small style='color:#64748b'>23CSE301 · Amrita VV · CB.SC.U4CSE24125</small>", unsafe_allow_html=True)
-    st.markdown("---")
+    st.markdown("""
+<div style="display:flex;align-items:center;gap:12px;padding:4px 0 16px;border-bottom:1px solid #1e293b;margin-bottom:16px;">
+  <div style="width:38px;height:38px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:1.25rem;font-weight:700;">❖</div>
+  <div>
+    <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;letter-spacing:-0.02em;">ML Capstone</div>
+    <div style="font-size:0.75rem;color:#60a5fa;font-weight:500;">23CSE301 · Amrita VV</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
     track = st.radio(
-        "**Select ML Track**",
-        ["📈  Regression", "🛡️  Classification", "🔵  Clustering"],
-        index=2,
+        "**ML Tracks**",
+        ["📈  Regression (Diamonds)", "🛡️  Classification (Fraud)", "🔵  Clustering (Amazon)"],
+        index=0,
         label_visibility="visible",
     )
 
@@ -319,18 +381,28 @@ with st.sidebar:
 
     def status_dot(ready): return "🟢" if ready else "🔴"
 
-    st.markdown(f"""
+    if M["reg"]["ready"] and M["clf"]["ready"] and M["clust"]["ready"]:
+        st.markdown("""
+<div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:8px;color:#10b981;font-weight:600;font-size:0.85rem;">
+    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 10px #10b981;"></span>
+    All Systems Live
+  </div>
+  <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">10 Regression · 10 Clf · K=4 Clust</div>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
 **Model Status**
 
 {status_dot(M['reg']['ready'])} Regression (Diamonds)  
 {status_dot(M['clf']['ready'])} Classification (Fraud)  
 {status_dot(M['clust']['ready'])} Clustering (Amazon)
 """)
-    if not (M["reg"]["ready"] and M["clf"]["ready"] and M["clust"]["ready"]):
-        st.warning("Run `python train_models.py` in the `gui/` folder to generate model artifacts.", icon="⚠️")
+        st.warning("Run `python app/train_models.py` to generate model artifacts.", icon="⚠️")
 
-    st.markdown("---")
-    st.caption("Streamlit 1.63 · scikit-learn 1.9")
+    st.markdown("<small style='color:#64748b'>Amrita VV · CB.SC.U4CSE24125</small>", unsafe_allow_html=True)
+
 
 
 # ─────────────────────────────────────────
