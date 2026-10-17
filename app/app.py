@@ -40,45 +40,87 @@ DATASETS_DIR = os.path.join(ROOT_DIR, "datasets") if os.path.exists(os.path.join
 # ─────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #e2e8f0 !important;
+/* Typography & Base Variables */
+:root {
+    --bg-page: #FFFFFF;
+    --bg-secondary: #FAF9F5;
+    --accent: #D97757;
+    --accent-hover: #C15F3C;
+    --text-primary: #1F1E1D;
+    --text-muted: #6B6A68;
+    --border-color: #E8E6DC;
+    --radius: 8px;
 }
 
-/* Base Canvas & Background - Neutral Slate Dark Mode */
+html, body, [class*="css"], .stMarkdown, p, span, label {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    color: #1F1E1D !important;
+}
+
+/* Base Canvas & Background - Clean Crisp White */
 .stApp {
-    background-color: #0b0f19 !important;
+    background-color: #FFFFFF !important;
+    color: #1F1E1D !important;
 }
 
-/* Sidebar */
-[data-testid="stSidebar"] {
-    background-color: #0f172a !important;
-    border-right: 1px solid #1e293b !important;
+/* Headings - Editorial Anthropic / Claude Aesthetic */
+h1, .main-title {
+    font-family: 'Source Serif 4', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: #1F1E1D !important;
+    letter-spacing: -0.015em !important;
+    font-size: 2.1rem !important;
+    margin-bottom: 0.4rem !important;
 }
-[data-testid="stSidebar"] * { color: #cbd5e1 !important; }
+
+h2, h3 {
+    font-family: 'Source Serif 4', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: #1F1E1D !important;
+    letter-spacing: -0.01em !important;
+}
+
+h4, h5, h6 {
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    font-weight: 600 !important;
+    color: #1F1E1D !important;
+    letter-spacing: -0.005em !important;
+}
+
+/* Sidebar - Subtle Warm Grey Canvas */
+[data-testid="stSidebar"] {
+    background-color: #FAF9F5 !important;
+    border-right: 1px solid #E8E6DC !important;
+}
+[data-testid="stSidebar"] * {
+    color: #1F1E1D !important;
+}
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 { color: #f8fafc !important; }
+[data-testid="stSidebar"] h3 {
+    color: #1F1E1D !important;
+}
 
 /* Radio Navigation in Sidebar */
 [data-testid="stSidebar"] .stRadio label { 
-    background: #1e293b !important;
-    border-radius: 6px !important;
+    background: #FFFFFF !important;
+    border-radius: 8px !important;
     padding: 10px 14px !important;
     margin: 4px 0 !important;
     display: block !important;
     cursor: pointer !important;
-    border: 1px solid #334155 !important;
+    border: 1px solid #E8E6DC !important;
     transition: background-color 0.15s ease, border-color 0.15s ease !important;
-    color: #cbd5e1 !important;
+    color: #1F1E1D !important;
     font-weight: 500 !important;
     font-size: 0.88rem !important;
+    box-shadow: none !important;
 }
 [data-testid="stSidebar"] .stRadio label:hover { 
-    border-color: #475569 !important;
-    background: #243247 !important;
-    color: #f8fafc !important; 
+    border-color: #D97757 !important;
+    background: #FAF9F5 !important;
+    color: #1F1E1D !important; 
 }
 
 /* Section Kickers */
@@ -87,70 +129,95 @@ html, body, [class*="css"] {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #3b82f6;
-    margin-bottom: 2px;
+    color: #D97757;
+    margin-bottom: 4px;
 }
 
-/* Metric Cards - Minimalist Solid KPI Blocks */
+/* Metric Cards - Minimalist Flat Bordered KPI Blocks */
 .metric-card {
-    background: #131b2e;
-    border: 1px solid #1e293b;
-    border-radius: 6px;
+    background: #FAF9F5;
+    border: 1px solid #E8E6DC;
+    border-radius: 8px;
     padding: 16px 20px;
     text-align: left;
 }
 .metric-val {
     font-size: 1.6rem;
-    font-weight: 700;
-    color: #f8fafc;
+    font-weight: 600;
+    color: #1F1E1D;
     letter-spacing: -0.02em;
 }
 .metric-lbl {
     font-size: 0.72rem;
-    color: #94a3b8;
+    color: #6B6A68;
     margin-top: 4px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 600;
 }
 
-/* Prediction Result Box - Clean Solid Alert Styling without neon drop-shadows */
+/* Streamlit Native Metric Overrides */
+[data-testid="stMetric"] {
+    background-color: #FAF9F5 !important;
+    border: 1px solid #E8E6DC !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    box-shadow: none !important;
+}
+[data-testid="stMetricLabel"] {
+    font-size: 0.72rem !important;
+    color: #6B6A68 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    font-weight: 600 !important;
+}
+[data-testid="stMetricValue"] {
+    font-size: 1.55rem !important;
+    font-weight: 600 !important;
+    color: #1F1E1D !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Prediction Result Box - Flat Solid Alert Styling */
 .pred-box {
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 20px;
     margin: 14px 0;
-    border: 1px solid #334155;
-    background: #131b2e;
+    border: 1px solid #E8E6DC;
+    background: #FAF9F5;
 }
 .pred-box.success {
-    background: #0d1e1a;
-    border: 1px solid #10b981;
+    background: #FAF9F5;
+    border: 1px solid #C8E6C9;
+    border-left: 4px solid #5B8266;
 }
 .pred-box.danger {
-    background: #201217;
-    border: 1px solid #ef4444;
+    background: #FAF9F5;
+    border: 1px solid #F8D7DA;
+    border-left: 4px solid #C15F3C;
 }
 .pred-box.neutral {
-    background: #111a2e;
-    border: 1px solid #2563eb;
+    background: #FAF9F5;
+    border: 1px solid #E8E6DC;
+    border-left: 4px solid #D97757;
 }
 
 .pred-label {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 1.65rem;
+    font-weight: 600;
     margin-bottom: 4px;
-    color: #f8fafc;
+    color: #1F1E1D;
     letter-spacing: -0.02em;
 }
 .pred-sub {
     font-size: 0.85rem;
-    color: #94a3b8;
+    color: #6B6A68;
 }
 
 /* Cluster Badge */
 .cluster-badge {
     display: inline-block;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 3px 10px;
     font-weight: 600;
     font-size: 0.75rem;
@@ -158,6 +225,7 @@ html, body, [class*="css"] {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border: 1px solid currentColor;
+    background: #FFFFFF;
 }
 
 /* Info Table */
@@ -167,17 +235,17 @@ html, body, [class*="css"] {
     margin-top: 10px;
 }
 .info-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #1e293b;
+    padding: 9px 12px;
+    border-bottom: 1px solid #E8E6DC;
     font-size: 0.84rem;
 }
 .info-table td:first-child {
-    color: #94a3b8;
+    color: #6B6A68;
     width: 55%;
 }
 .info-table td:last-child {
     font-weight: 600;
-    color: #f8fafc;
+    color: #1F1E1D;
     text-align: right;
 }
 
@@ -185,23 +253,23 @@ html, body, [class*="css"] {
 .section-hdr {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: #1F1E1D;
     margin: 18px 0 10px;
 }
 
 /* Divider */
 hr {
     border: none;
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid #E8E6DC;
     margin: 20px 0;
 }
 
 /* Cluster Profile Card */
 .clu-card {
-    background: #131b2e;
-    border-radius: 6px;
+    background: #FAF9F5;
+    border-radius: 8px;
     padding: 18px;
-    border: 1px solid #1e293b;
+    border: 1px solid #E8E6DC;
     margin-bottom: 12px;
 }
 
@@ -215,31 +283,32 @@ hr {
 }
 .dist-name {
     width: 200px;
-    color: #cbd5e1;
+    color: #1F1E1D;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
 }
 .dist-bar-wrap {
     flex: 1;
-    background: #1e293b;
-    border-radius: 3px;
+    background: #E8E6DC;
+    border-radius: 4px;
     height: 6px;
 }
 .dist-bar {
     height: 6px;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 .dist-val {
     width: 55px;
     text-align: right;
-    color: #f8fafc;
+    color: #1F1E1D;
     font-weight: 600;
 }
 
 /* Confidence Bar */
 .conf-wrap {
-    background: #1e293b;
+    background: #E8E6DC;
     border-radius: 4px;
     height: 8px;
     margin: 8px 0;
@@ -251,67 +320,109 @@ hr {
 }
 
 /* Form Controls - Inputs & Dropdowns */
-.stNumberInput input, .stSelectbox [data-baseweb="select"], .stTextInput input {
-    background-color: #101726 !important;
-    color: #f8fafc !important;
-    border: 1px solid #243044 !important;
-    border-radius: 6px !important;
+.stNumberInput input, .stSelectbox [data-baseweb="select"], .stTextInput input, .stTextArea textarea {
+    background-color: #FAF9F5 !important;
+    color: #1F1E1D !important;
+    border: 1px solid #E8E6DC !important;
+    border-radius: 8px !important;
     font-size: 0.9rem !important;
+    box-shadow: none !important;
 }
 .stNumberInput input:focus, .stSelectbox [data-baseweb="select"]:focus, .stTextInput input:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: none !important;
+    border-color: #D97757 !important;
+    box-shadow: 0 0 0 1px #D97757 !important;
     outline: none !important;
 }
+.stSelectbox [data-baseweb="select"] * {
+    color: #1F1E1D !important;
+}
 
-/* Primary Action Buttons - Solid Professional SaaS */
+/* Primary Action Buttons - Solid Orange Terracotta */
 button[kind="primary"] {
-    background-color: #2563eb !important;
+    background-color: #D97757 !important;
     background-image: none !important;
-    border: 1px solid #3b82f6 !important;
-    color: #ffffff !important;
-    border-radius: 6px !important;
+    border: 1px solid #D97757 !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
     box-shadow: none !important;
     font-weight: 500 !important;
     font-size: 0.9rem !important;
-    padding: 8px 16px !important;
-    transition: background-color 0.15s ease !important;
+    padding: 8px 18px !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
 button[kind="primary"]:hover {
-    background-color: #1d4ed8 !important;
-    border-color: #2563eb !important;
+    background-color: #C15F3C !important;
+    border-color: #C15F3C !important;
     box-shadow: none !important;
     transform: none !important;
 }
+button[kind="primary"] * {
+    color: #FFFFFF !important;
+}
 
-/* Tabs - Clean Segmented Control with Active Hairline */
+/* Secondary Buttons */
+button[kind="secondary"], .stButton > button:not([kind="primary"]) {
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    border: 1px solid #E8E6DC !important;
+    color: #1F1E1D !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    padding: 8px 18px !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+button[kind="secondary"]:hover, .stButton > button:not([kind="primary"]):hover {
+    background-color: #FAF9F5 !important;
+    border-color: #D5D2C7 !important;
+    color: #1F1E1D !important;
+}
+
+/* Tabs - Clean Segmented Control with Active Orange Hairline */
 .stTabs [data-baseweb="tab-list"] {
     background: transparent;
-    border-bottom: 1px solid #1e293b;
+    border-bottom: 1px solid #E8E6DC;
     padding: 0;
     gap: 8px;
 }
 .stTabs [data-baseweb="tab"] {
-    border-radius: 6px 6px 0 0;
+    border-radius: 8px 8px 0 0;
     padding: 8px 16px;
     font-weight: 500;
     font-size: 0.88rem;
-    color: #94a3b8 !important;
+    color: #6B6A68 !important;
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
     transition: color 0.15s ease, border-color 0.15s ease;
 }
 .stTabs [data-baseweb="tab"]:hover {
-    color: #f8fafc !important;
+    color: #1F1E1D !important;
     background: transparent;
 }
 .stTabs [aria-selected="true"] {
     background: transparent !important;
-    color: #3b82f6 !important;
+    color: #1F1E1D !important;
     font-weight: 600 !important;
-    border-bottom: 2px solid #3b82f6 !important;
+    border-bottom: 2px solid #D97757 !important;
     box-shadow: none !important;
+}
+
+/* Alerts / Banners */
+.stAlert {
+    border-radius: 8px !important;
+    border: 1px solid #E8E6DC !important;
+    background-color: #FAF9F5 !important;
+    color: #1F1E1D !important;
+    box-shadow: none !important;
+}
+
+/* Dataframe & Tables */
+[data-testid="stDataFrame"] {
+    border: 1px solid #E8E6DC !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
 }
 
 /* Hide Streamlit default branding */
@@ -417,10 +528,10 @@ def load_clustering_data():
     df["pca_y"] = X_pca[:, 1]
 
     CLUSTER_META = {
-        0: {"name": "Standard Full-Price Catalog", "tag": "Core Evergreen",    "color": "#3b82f6"},
-        1: {"name": "High-Velocity & Reviewed",    "tag": "Social Proof Star", "color": "#ef4444"},
-        2: {"name": "Promotional & Discounted",    "tag": "Discount Driven",   "color": "#10b981"},
-        3: {"name": "Unrated / New / Dormant",     "tag": "Cold Start",        "color": "#8b5cf6"},
+        0: {"name": "Standard Full-Price Catalog", "tag": "Core Evergreen",    "color": "#D97757"},
+        1: {"name": "High-Velocity & Reviewed",    "tag": "Social Proof Star", "color": "#5A6B7C"},
+        2: {"name": "Promotional & Discounted",    "tag": "Discount Driven",   "color": "#5B8266"},
+        3: {"name": "Unrated / New / Dormant",     "tag": "Cold Start",        "color": "#877B70"},
     }
 
     profiles = {}
@@ -476,13 +587,13 @@ def load_clustering_data():
 # ─────────────────────────────────────────
 PLOTLY_LAYOUT = dict(
     font_family="Inter, -apple-system, BlinkMacSystemFont, sans-serif",
-    font_color="#94a3b8",
+    font_color="#1F1E1D",
     paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="#0f172a",
+    plot_bgcolor="#FFFFFF",
     margin=dict(l=40, r=20, t=40, b=40),
-    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#cbd5e1", size=11)),
-    xaxis=dict(gridcolor="#1e293b", color="#64748b", zerolinecolor="#1e293b"),
-    yaxis=dict(gridcolor="#1e293b", color="#64748b", zerolinecolor="#1e293b"),
+    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#1F1E1D", size=11)),
+    xaxis=dict(gridcolor="#E8E6DC", color="#6B6A68", zerolinecolor="#E8E6DC", linecolor="#E8E6DC"),
+    yaxis=dict(gridcolor="#E8E6DC", color="#6B6A68", zerolinecolor="#E8E6DC", linecolor="#E8E6DC"),
 )
 
 def get_layout(**kwargs):
@@ -491,18 +602,18 @@ def get_layout(**kwargs):
     layout.update(kwargs)
     return layout
 
-CLUSTER_COLORS = {0: "#3b82f6", 1: "#ef4444", 2: "#10b981", 3: "#8b5cf6"}
+CLUSTER_COLORS = {0: "#D97757", 1: "#5A6B7C", 2: "#5B8266", 3: "#877B70"}
 
 # ─────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-<div style="display:flex;align-items:center;gap:10px;padding:4px 0 14px;border-bottom:1px solid #1e293b;margin-bottom:14px;">
-  <div style="width:32px;height:32px;background:#1e293b;border:1px solid #334155;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#f8fafc;font-size:0.85rem;font-weight:700;">ML</div>
+<div style="display:flex;align-items:center;gap:10px;padding:4px 0 14px;border-bottom:1px solid #E8E6DC;margin-bottom:14px;">
+  <div style="width:32px;height:32px;background:#FAF9F5;border:1px solid #E8E6DC;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#1F1E1D;font-size:0.85rem;font-weight:700;">ML</div>
   <div>
-    <div style="font-weight:600;font-size:0.95rem;color:#f8fafc;letter-spacing:-0.01em;">ML Platform</div>
-    <div style="font-size:0.75rem;color:#64748b;">23CSE301 · Amrita VV</div>
+    <div style="font-weight:600;font-size:0.95rem;color:#1F1E1D;letter-spacing:-0.01em;">ML Platform</div>
+    <div style="font-size:0.75rem;color:#6B6A68;">23CSE301 · Amrita VV</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -519,12 +630,12 @@ with st.sidebar:
 
     if M["reg"]["ready"] and M["clf"]["ready"] and M["clust"]["ready"]:
         st.markdown("""
-<div style="background:#131b2e;border:1px solid #1e293b;border-radius:6px;padding:10px 12px;margin-bottom:12px;">
-  <div style="display:flex;align-items:center;gap:6px;color:#10b981;font-weight:600;font-size:0.8rem;">
-    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;"></span>
+<div style="background:#FAF9F5;border:1px solid #E8E6DC;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:6px;color:#2E7D32;font-weight:600;font-size:0.8rem;">
+    <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#2E7D32;"></span>
     All Systems Operational
   </div>
-  <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">10 Regressors · 10 Classifiers · K=4 Clusters</div>
+  <div style="font-size:0.72rem;color:#6B6A68;margin-top:2px;">10 Regressors · 10 Classifiers · K=4 Clusters</div>
 </div>
 """, unsafe_allow_html=True)
     else:
@@ -537,7 +648,7 @@ Clustering: {'Operational' if M['clust']['ready'] else 'Offline'}
 """)
         st.warning("Run `python app/train_models.py` to generate model artifacts.")
 
-    st.markdown("<div style='font-size:0.72rem;color:#64748b;'>Student ID: CB.SC.U4CSE24125</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.72rem;color:#6B6A68;'>Student ID: CB.SC.U4CSE24125</div>", unsafe_allow_html=True)
 
 
 
@@ -649,7 +760,7 @@ if "Regression" in track:
         best_r2 = df_models["R²"].max()
         def highlight_best(row):
             if row["R²"] == best_r2:
-                return ["background-color:#dbeafe; font-weight:600"] * len(row)
+                return ["background-color:#FAF0EB; font-weight:600; color:#1F1E1D"] * len(row)
             return [""] * len(row)
 
         st.dataframe(
@@ -662,7 +773,7 @@ if "Regression" in track:
         # Bar chart of R² scores
         fig_r2 = go.Figure(go.Bar(
             x=df_models["R²"], y=df_models["Model"], orientation="h",
-            marker_color=["#3b82f6" if r == best_r2 else "#94a3b8" for r in df_models["R²"]],
+            marker_color=["#D97757" if r == best_r2 else "#D5D2C7" for r in df_models["R²"]],
             text=[f"{v:.4f}" for v in df_models["R²"]], textposition="outside",
         ))
         fig_r2.update_layout(title="R² Score Comparison (higher = better)",
@@ -673,7 +784,7 @@ if "Regression" in track:
         with c1:
             fig_rmse = go.Figure(go.Bar(
                 x=df_models["RMSE ($)"], y=df_models["Model"], orientation="h",
-                marker_color=["#10b981" if r == df_models["RMSE ($)"].min() else "#94a3b8" for r in df_models["RMSE ($)"]],
+                marker_color=["#D97757" if r == df_models["RMSE ($)"].min() else "#D5D2C7" for r in df_models["RMSE ($)"]],
                 text=[f"${v:,.0f}" for v in df_models["RMSE ($)"]], textposition="outside",
             ))
             fig_rmse.update_layout(title="RMSE (lower = better)", **PLOTLY_LAYOUT)
@@ -681,7 +792,7 @@ if "Regression" in track:
         with c2:
             fig_mae = go.Figure(go.Bar(
                 x=df_models["MAE ($)"], y=df_models["Model"], orientation="h",
-                marker_color=["#10b981" if r == df_models["MAE ($)"].min() else "#94a3b8" for r in df_models["MAE ($)"]],
+                marker_color=["#D97757" if r == df_models["MAE ($)"].min() else "#D5D2C7" for r in df_models["MAE ($)"]],
                 text=[f"${v:,.0f}" for v in df_models["MAE ($)"]], textposition="outside",
             ))
             fig_mae.update_layout(title="MAE (lower = better)", **PLOTLY_LAYOUT)
@@ -721,11 +832,11 @@ if "Regression" in track:
                 mode="markers",
                 marker=dict(
                     color=abs_err_arr,
-                    colorscale="Viridis",
+                    colorscale=[[0, "#E8E6DC"], [0.5, "#D97757"], [1, "#8C3B1E"]],
                     size=5.5,
-                    opacity=0.8,
+                    opacity=0.85,
                     showscale=True,
-                    colorbar=dict(title="Error ($)", len=0.75, thickness=12, x=1.02)
+                    colorbar=dict(title=dict(text="Error ($)", font=dict(color="#6B6A68", size=11)), len=0.75, thickness=12, x=1.02, tickfont=dict(color="#6B6A68"))
                 ),
                 name="Predictions",
                 hovertemplate="Actual: $%{x:,.0f}<br>Predicted: $%{y:,.0f}<br>Error: $%{marker.color:,.0f}<extra></extra>",
@@ -733,7 +844,7 @@ if "Regression" in track:
             max_val = max(max(avp["actual"]), max(avp["predicted"]))
             fig_avp.add_trace(go.Scatter(
                 x=[0, max_val], y=[0, max_val], mode="lines",
-                line=dict(color="#ef4444", dash="dash", width=1.8),
+                line=dict(color="#C15F3C", dash="dash", width=1.5),
                 name="Ideal (y = x)"
             ))
             fig_avp.update_layout(
@@ -746,10 +857,10 @@ if "Regression" in track:
         with c2:
             fig_res = go.Figure(go.Histogram(
                 x=avp["residuals"], nbinsx=45,
-                marker_color="#3b82f6", opacity=0.8,
+                marker_color="#D97757", opacity=0.85,
                 hovertemplate="Residual: $%{x:,.0f}<br>Count: %{y}<extra></extra>",
             ))
-            fig_res.add_vline(x=0, line_color="#ef4444", line_dash="dash", line_width=1.5)
+            fig_res.add_vline(x=0, line_color="#C15F3C", line_dash="dash", line_width=1.5)
             fig_res.update_layout(
                 title=f"Residual Distribution (Actual − Predicted) — {reg_viz_model}",
                 xaxis_title="Residual ($)", yaxis_title="Count",
@@ -764,11 +875,11 @@ if "Regression" in track:
             fig_rvp.add_trace(go.Scatter(
                 x=avp["predicted"], y=avp["residuals"],
                 mode="markers",
-                marker=dict(color="#f59e0b", opacity=0.7, size=5),
+                marker=dict(color="#D97757", opacity=0.7, size=5),
                 hovertemplate="Predicted: $%{x:,.0f}<br>Residual: $%{y:,.0f}<extra></extra>",
                 name="Residuals"
             ))
-            fig_rvp.add_hline(y=0, line_color="#ef4444", line_dash="dash", line_width=1.5)
+            fig_rvp.add_hline(y=0, line_color="#C15F3C", line_dash="dash", line_width=1.5)
             fig_rvp.update_layout(
                 title=f"Residuals vs. Predicted Price — {reg_viz_model}",
                 xaxis_title="Predicted Price ($)", yaxis_title="Residual ($)",
@@ -782,7 +893,7 @@ if "Regression" in track:
                 fi_df = pd.DataFrame(fi_all[reg_viz_model][:10]).sort_values("importance")
                 fig_fi = go.Figure(go.Bar(
                     x=fi_df["importance"], y=fi_df["feature"], orientation="h",
-                    marker_color="#10b981", opacity=0.85,
+                    marker_color="#D97757", opacity=0.9,
                     text=[f"{v:.3f}" if v < 10 else f"{v:,.0f}" for v in fi_df["importance"]],
                     textposition="outside",
                 ))
@@ -803,7 +914,7 @@ if "Regression" in track:
 
                 fig_tier = go.Figure(go.Bar(
                     x=tier_names, y=tier_maes,
-                    marker_color=["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+                    marker_color=["#D5D2C7", "#B8B3A8", "#D97757", "#C15F3C"],
                     text=[f"${v:,.0f}" for v in tier_maes], textposition="outside",
                 ))
                 fig_tier.update_layout(
@@ -922,7 +1033,7 @@ elif "Classification" in track:
                     # Probability bars
                     fig_prob = go.Figure(go.Bar(
                         x=["Legitimate", "Fraud"], y=[legit_pct, fraud_pct],
-                        marker_color=["#10b981", "#ef4444"],
+                        marker_color=["#5B8266", "#D97757"],
                         text=[f"{legit_pct}%", f"{fraud_pct}%"], textposition="outside",
                     ))
                     fig_prob.update_layout(yaxis_title="Probability (%)", yaxis_range=[0, 110],
@@ -958,7 +1069,7 @@ elif "Classification" in track:
                 fig_bal = go.Figure(go.Pie(
                     labels=["Legitimate (98.5%)", "Fraud (1.5%)"],
                     values=[98500, 1500], hole=0.5,
-                    marker_colors=["#22c55e", "#ef4444"],
+                    marker_colors=["#E8E6DC", "#D97757"],
                 ))
                 fig_bal.update_layout(showlegend=True,
                                        **get_layout(margin=dict(l=10, r=10, t=10, b=10)))
@@ -983,7 +1094,7 @@ elif "Classification" in track:
 
         def highlight_clf(row):
             if row["ROC-AUC"] == best_auc:
-                return ["background-color:#dbeafe; font-weight:600"] * len(row)
+                return ["background-color:#FAF0EB; font-weight:600; color:#1F1E1D"] * len(row)
             return [""] * len(row)
 
         st.dataframe(
@@ -995,7 +1106,7 @@ elif "Classification" in track:
         # Grouped bar chart
         fig_clf_bar = go.Figure()
         metrics_to_show = ["Accuracy", "Precision", "Recall", "Weighted F1", "ROC-AUC"]
-        colors = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ef4444"]
+        colors = ["#D97757", "#5B8266", "#D5D2C7", "#8C827A", "#C15F3C"]
         for i, metric in enumerate(metrics_to_show):
             fig_clf_bar.add_trace(go.Bar(
                 name=metric, x=df_clf_tbl["Model"], y=df_clf_tbl[metric],
@@ -1048,9 +1159,9 @@ elif "Classification" in track:
             fig_cm = go.Figure(go.Heatmap(
                 z=cm, x=["Predicted: Legit", "Predicted: Fraud"],
                 y=["Actual: Legit", "Actual: Fraud"],
-                colorscale=[[0, "#0f172a"], [0.5, "#1e3a8a"], [1, "#2563eb"]],
+                colorscale=[[0, "#FFFFFF"], [0.5, "#FBEBE4"], [1, "#D97757"]],
                 text=text_vals, texttemplate="%{text}",
-                textfont={"size": 13, "color": "#f8fafc"},
+                textfont={"size": 13, "color": "#1F1E1D"},
                 showscale=False,
             ))
             fig_cm.update_layout(title=f"Confusion Matrix — {model_for_charts}", **get_layout(height=340))
@@ -1063,22 +1174,22 @@ elif "Classification" in track:
                     if other_name != model_for_charts:
                         fig_roc.add_trace(go.Scatter(
                             x=other_m["roc_fpr"], y=other_m["roc_tpr"], mode="lines",
-                            line=dict(color="#475569", width=1),
+                            line=dict(color="#D5D2C7", width=1),
                             name=f"{other_name} ({other_m['roc_auc']:.3f})",
-                            opacity=0.45, hoverinfo="name"
+                            opacity=0.6, hoverinfo="name"
                         ))
 
             fpr = m_res["roc_fpr"]
             tpr = m_res["roc_tpr"]
             fig_roc.add_trace(go.Scatter(
                 x=fpr, y=tpr, mode="lines", fill="tozeroy",
-                line=dict(color="#3b82f6", width=2.5),
+                line=dict(color="#D97757", width=2),
                 name=f"{model_for_charts} (AUC = {m_res['roc_auc']:.4f})",
-                fillcolor="rgba(59,130,246,0.15)"
+                fillcolor="rgba(217, 119, 87, 0.08)"
             ))
             fig_roc.add_trace(go.Scatter(
                 x=[0, 1], y=[0, 1], mode="lines",
-                line=dict(color="#94a3b8", dash="dash", width=1),
+                line=dict(color="#6B6A68", dash="dash", width=1),
                 name="Random Baseline", showlegend=True
             ))
             fig_roc.update_layout(
@@ -1095,7 +1206,7 @@ elif "Classification" in track:
             cm = np.array(m_res["confusion_matrix"])
             outcome_names = ["True Legitimate (TN)", "Fraud Caught (TP)", "False Alarm (FP)", "Missed Fraud (FN)"]
             outcome_counts = [int(cm[0][0]), int(cm[1][1]), int(cm[0][1]), int(cm[1][0])]
-            outcome_colors = ["#22c55e", "#3b82f6", "#f59e0b", "#ef4444"]
+            outcome_colors = ["#5B8266", "#D97757", "#D5D2C7", "#C15F3C"]
 
             fig_breakdown = go.Figure(go.Bar(
                 x=outcome_names, y=outcome_counts,
@@ -1118,7 +1229,7 @@ elif "Classification" in track:
                 top_fi = pd.DataFrame(m_fi[:12]).sort_values("importance")
                 fig_fi = go.Figure(go.Bar(
                     x=top_fi["importance"], y=top_fi["feature"], orientation="h",
-                    marker_color="#3b82f6", opacity=0.85,
+                    marker_color="#D97757", opacity=0.9,
                     text=[f"{v:.4f}" for v in top_fi["importance"]], textposition="outside",
                 ))
                 x_label = "Coefficient Magnitude (|β|)" if "Logistic" in model_for_charts else "Gini / Split Importance"
@@ -1142,12 +1253,12 @@ elif "Classification" in track:
                 fig_bench = go.Figure()
                 fig_bench.add_trace(go.Bar(
                     name=model_for_charts, x=all_metrics, y=model_vals,
-                    marker_color="#3b82f6", opacity=0.85,
+                    marker_color="#D97757", opacity=0.9,
                     text=[f"{v:.3f}" for v in model_vals], textposition="outside"
                 ))
                 fig_bench.add_trace(go.Bar(
                     name="10-Model Average", x=all_metrics, y=avg_vals,
-                    marker_color="#64748b", opacity=0.6,
+                    marker_color="#D5D2C7", opacity=0.9,
                     text=[f"{v:.3f}" for v in avg_vals], textposition="outside"
                 ))
                 fig_bench.update_layout(
@@ -1256,7 +1367,7 @@ elif "Clustering" in track:
   <div class="cluster-badge" style="color:{meta['color']}; border-color:{meta['color']};">
     Cluster {pred_c} · {meta['tag']}
   </div>
-  <div class="pred-label" style="color:#f8fafc;">{meta['name']}</div>
+  <div class="pred-label" style="color:#1F1E1D;">{meta['name']}</div>
   <div class="pred-sub">Centroid Confidence: <strong>{confidence}%</strong> · Nearest Distance: {nearest_dist:.3f}</div>
 </div>
 """, unsafe_allow_html=True)
@@ -1312,7 +1423,7 @@ elif "Clustering" in track:
                     st.markdown(f"""
 <div class="clu-card" style="border-left: 3px solid {meta['color']};">
   <div style="font-weight:600; color:{meta['color']}; font-size:0.88rem;">Cluster {cid} — {meta['name']}</div>
-  <div style="color:#94a3b8; font-size:0.8rem; margin-top:3px;">{p['count']:,} products ({p['share']}%) · Median ${p['median_price']:.2f} · Discount rate {p['discount_rate']}%</div>
+  <div style="color:#6B6A68; font-size:0.8rem; margin-top:3px;">{p['count']:,} products ({p['share']}%) · Median ${p['median_price']:.2f} · Discount rate {p['discount_rate']}%</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1334,10 +1445,10 @@ elif "Clustering" in track:
                 st.markdown(f"""
 <div class="clu-card" style="border-top: 3px solid {meta['color']}; text-align:center;">
   <div style="font-size:1.5rem; font-weight:700; color:{meta['color']};">{p['share']}%</div>
-  <div style="font-weight:600; color:#f8fafc; font-size:0.85rem; margin:4px 0;">{meta['name']}</div>
-  <div style="color:#94a3b8; font-size:0.75rem;">{p['count']:,} items</div>
-  <hr style="border-color:#1e293b; margin:10px 0;">
-  <div style="font-size:0.78rem; color:#94a3b8; line-height:1.6;">
+  <div style="font-weight:600; color:#1F1E1D; font-size:0.85rem; margin:4px 0;">{meta['name']}</div>
+  <div style="color:#6B6A68; font-size:0.75rem;">{p['count']:,} items</div>
+  <hr style="border-color:#E8E6DC; margin:10px 0;">
+  <div style="font-size:0.78rem; color:#6B6A68; line-height:1.6;">
     Median ${p['median_price']:.0f}<br>
     Rating: {p['mean_stars']:.1f} / 5.0<br>
     {p['mean_reviews']:,.0f} reviews avg<br>
@@ -1435,11 +1546,11 @@ elif "Clustering" in track:
         fig_elbow = go.Figure()
         fig_elbow.add_trace(go.Scatter(
             x=elbow_df["k"], y=elbow_df[elbow_metric], mode="lines+markers",
-            line=dict(color="#3b82f6", width=2.5),
-            marker=dict(size=8, color=["#ef4444" if k == 4 else "#3b82f6" for k in elbow_df["k"]]),
+            line=dict(color="#D97757", width=2),
+            marker=dict(size=8, color=["#C15F3C" if k == 4 else "#D97757" for k in elbow_df["k"]]),
             hovertemplate="k=%{x}<br>" + elbow_metric + "=%{y:.4f}<extra></extra>",
         ))
-        fig_elbow.add_vline(x=4, line_dash="dash", line_color="#ef4444", line_width=1.5,
+        fig_elbow.add_vline(x=4, line_dash="dash", line_color="#C15F3C", line_width=1.5,
                              annotation_text="Selected k=4", annotation_position="top right")
         fig_elbow.update_layout(
             title=f"{elbow_metric.replace('_',' ').title()} vs. k",
@@ -1507,21 +1618,21 @@ elif "Clustering" in track:
             cid = int(row["Cluster"])
             color = C["meta"][cid]["color"]
             with grid_cols[i % 3]:
-                disc_badge = f'<span style="background:#272215;color:#f59e0b;border:1px solid #78350f;padding:1px 6px;border-radius:3px;font-size:0.7rem;margin-left:6px;">SALE</span>' if row["has_discount"] else ""
+                disc_badge = f'<span style="background:#FAF9F5;color:#C15F3C;border:1px solid #E8E6DC;padding:1px 6px;border-radius:4px;font-size:0.7rem;margin-left:6px;font-weight:600;">SALE</span>' if row["has_discount"] else ""
                 st.markdown(f"""
-<div style="border:1px solid #1e293b;border-left:3px solid {color};border-radius:6px;padding:12px;margin-bottom:10px;background:#131b2e;">
+<div style="border:1px solid #E8E6DC;border-left:3px solid {color};border-radius:8px;padding:14px;margin-bottom:12px;background:#FAF9F5;">
   <div style="font-size:0.75rem;color:{color};font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;">
     C{cid} · {C['meta'][cid]['tag']}{disc_badge}
   </div>
-  <div style="font-size:0.83rem;font-weight:600;color:#f8fafc;margin-bottom:6px;line-height:1.35;height:2.6rem;overflow:hidden;">
+  <div style="font-size:0.85rem;font-weight:600;color:#1F1E1D;margin-bottom:6px;line-height:1.35;height:2.6rem;overflow:hidden;">
     {str(row['title'])[:80]}
   </div>
-  <div style="font-size:0.75rem;color:#94a3b8;">{row['category_name']}</div>
-  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:0.82rem;">
-    <span style="font-weight:700;color:#f8fafc;">${row['price']:.2f}</span>
-    <span style="color:#94a3b8;">{row['stars']:.1f} ★ · {int(row['reviews']):,} reviews</span>
+  <div style="font-size:0.75rem;color:#6B6A68;">{row['category_name']}</div>
+  <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:0.82rem;">
+    <span style="font-weight:700;color:#1F1E1D;">${row['price']:.2f}</span>
+    <span style="color:#6B6A68;">{row['stars']:.1f} ★ · {int(row['reviews']):,} reviews</span>
   </div>
-  <div style="font-size:0.72rem;color:#64748b;margin-top:3px;">{int(row['boughtInLastMonth']):,} bought/month</div>
+  <div style="font-size:0.72rem;color:#6B6A68;margin-top:3px;">{int(row['boughtInLastMonth']):,} bought/month</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1532,7 +1643,7 @@ elif "Clustering" in track:
                 st.session_state.catalog_page -= 1
                 st.rerun()
         with p2:
-            st.markdown(f"<div style='text-align:center;color:#64748b;padding-top:6px;'>Page {page} of {max_page}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center;color:#6B6A68;padding-top:6px;'>Page {page} of {max_page}</div>", unsafe_allow_html=True)
         with p3:
             if st.button("Next →", disabled=(page >= max_page)):
                 st.session_state.catalog_page += 1
